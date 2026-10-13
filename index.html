@@ -239,7 +239,7 @@ async function exportBackup(){
   if(!state.all.length){toast('백업할 기록이 없습니다.');return;}
   toast('클라우드 사진을 포함한 백업을 생성하는 중…');
   const records=[];
-  for(const r of state.all)records.push({...r,groupPhoto:await imageToDataURL(r.groupPhoto),albumCover:await imageToDataURL(r.albumCover),groupPhotoPath:null,albumCoverPath:null});
+  for(const r of state.all){const members=[];for(const m of r.members||[])members.push({...m,photo:await imageToDataURL(m.photo),photoPath:null});records.push({...r,members,groupPhoto:await imageToDataURL(r.groupPhoto),albumCover:await imageToDataURL(r.albumCover),groupPhotoPath:null,albumCoverPath:null});}
   const content={format:'idol-index-backup',version:1,exportedAt:new Date().toISOString(),records};
   const blob=new Blob([JSON.stringify(content)],{type:'application/json'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`idol-index-cloud-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -262,6 +262,7 @@ async function importBackup(file){
     copy[k]=copy[k]&&copy[k].startsWith('data:')?dataURLToBlob(copy[k]):null;
     copy[k+'Path']=null;
    }
+   copy.members=(copy.members||[]).map(m=>({...m,photo:typeof m.photo==='string'&&m.photo.startsWith('data:')?dataURLToBlob(m.photo):null,photoPath:null}));
    copy.updatedAt=new Date().toISOString();
    await put(copy);n++;
   }
