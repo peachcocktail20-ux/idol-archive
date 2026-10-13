@@ -51,6 +51,29 @@ main{padding:49px 0 95px;min-height:calc(100vh - 145px)}.eyebrow{color:#8b9090;f
 .upload[data-paste-kind],.member-photo[data-paste-kind]{transition:border-color .2s}
 .upload.paste-selected,.member-photo.paste-selected{border-color:#9b70d4;box-shadow:0 0 0 3px #9b70d41f}
 .logo-word,.logo-symbol{font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+
+/* Click-to-enlarge for archived images */
+img.zoomable-image{cursor:zoom-in}
+img.zoomable-image:focus-visible{outline:3px solid var(--purple);outline-offset:3px}
+.image-lightbox{padding:13px;border:1px solid #dedfe1;border-radius:16px;max-width:min(96vw,1500px);max-height:96vh;width:max-content;background:#fff;color:#28313b;box-shadow:0 30px 100px #0004}
+.image-lightbox::backdrop{background:rgba(11,18,31,.85);backdrop-filter:blur(4px)}
+.lightbox-toolbar{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:12px;font-size:11px;font-weight:850;letter-spacing:.07em}
+.lightbox-actions{display:flex;align-items:center;gap:14px}
+.lightbox-actions a{color:#445f9b;font-size:11px;letter-spacing:0;text-decoration:underline;text-underline-offset:3px}
+.lightbox-actions button{border:0;background:#f0f1f2;border-radius:8px;padding:6px 11px;font-size:17px}
+.image-lightbox>img{display:block;margin:0 auto;width:auto;height:auto;max-width:calc(96vw - 30px);max-height:calc(96vh - 106px);object-fit:contain;border-radius:6px}
+.lightbox-note{color:#7b8386;margin:9px 3px 0;font-size:11px;letter-spacing:0}
+.detail-shell{grid-template-columns:minmax(0,1fr) 330px}
+.album-tracklist{border-top:1px solid var(--line);padding-top:16px;margin-top:17px;margin-bottom:19px}
+.album-tracklist h4{margin:0 0 10px;font-size:13px;font-weight:850;letter-spacing:.025em}
+.album-tracklist h4 span{font-size:10px;font-weight:650;color:#9ca2a0;letter-spacing:0}
+.detail-secondary .track-display{display:grid;grid-template-columns:23px minmax(0,1fr);gap:6px 9px;align-items:start;padding:11px 0}
+.detail-secondary .track-display .num{width:auto}
+.detail-secondary .track-display .track-info{min-width:0}
+.detail-secondary .track-display a{grid-column:2;justify-self:start;margin-top:2px;font-size:10px}
+.detail-secondary .track-display .pill{display:inline-block;margin:4px 0 0 6px}
+@media(max-width:980px){.detail-shell{grid-template-columns:1fr}.detail-secondary{max-width:none}.image-lightbox{max-width:95vw}}
+@media(max-width:650px){.image-lightbox{padding:9px}.lightbox-toolbar{gap:8px;font-size:9px}.lightbox-actions{gap:8px}.lightbox-actions a{font-size:10px}.lightbox-note{font-size:10px}.image-lightbox>img{max-width:calc(95vw - 22px)}}
 </style>
 </head>
 <body>
@@ -63,6 +86,17 @@ main{padding:49px 0 95px;min-height:calc(100vh - 145px)}.eyebrow{color:#8b9090;f
 <main class="shell" id="app" aria-live="polite"></main>
 <footer class="shell footer"><span>IDOL INDEX © 2026 · Online K-POP Archive</span><span>기록과 사진은 Supabase 클라우드에 저장됩니다.</span></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<dialog id="image-lightbox" class="image-lightbox" aria-label="원본 이미지 보기">
+ <div class="lightbox-toolbar">
+  <span>IMAGE VIEWER</span>
+  <div class="lightbox-actions">
+   <a id="image-original-link" href="#" target="_blank" rel="noopener noreferrer">원본 파일 열기 ↗</a>
+   <button type="button" id="image-lightbox-close" aria-label="이미지 닫기">✕</button>
+  </div>
+ </div>
+ <img id="lightbox-photo" alt="확대한 사진">
+ <p class="lightbox-note">이미지를 화면 크기에 맞춰 표시합니다. 원본 해상도는 '원본 파일 열기'에서 확인할 수 있습니다.</p>
+</dialog>
 <script src="./config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
@@ -84,7 +118,7 @@ function imgURL(data){
  if(typeof data==='string'&&/^https:\/\//.test(data))return data;
  return '';
 }
-function iconCover(blob,text='IMG'){const src=imgURL(blob);return src?`<img src="${esc(src)}" alt="앨범/그룹 이미지">`:`<div class="record-fallback">${esc(text)}</div>`;}
+function iconCover(blob,text='IMG',focusable=true){const src=imgURL(blob);return src?`<img class="zoomable-image" src="${esc(src)}" alt="앨범/그룹 이미지" ${focusable?'role="button" tabindex="0" aria-label="사진 크게 보기"':''} title="클릭하여 원본 이미지 보기">`:`<div class="record-fallback">${esc(text)}</div>`;}
 function defaultTrack(i){return {name:'',genre:'',youtube:'',title:i===0};}
 function newDraft(type){return {id:newId(),type,groupName:'',company:'',debutDate:'',memberCount:2,members:[blankMember(),blankMember()],debutAlbumName:'',albumName:'',releaseDate:'',albumType:'미니',tracks:[defaultTrack(0)],groupPhoto:null,albumCover:null,createdAt:new Date().toISOString(),updatedAt:''};}
 function blankMember(){return {name:'',birthYear:'',nationality:'',position:'',photo:null,photoPath:null};}
@@ -198,7 +232,7 @@ function showDetail(id){const rec=state.all.find(r=>r.id===id);if(!rec)return;st
 function categoryTile(type,num){const m=meta[type];return `<button class="category ${type}" data-action="category" data-type="${type}"><span class="cat-kicker">COLLECTION / 0${num}</span><span class="cat-title">${m.title.replace('NEW ','NEW<br>')}</span><span class="cat-meta"><span class="cat-arrow">↗</span>${count(type)}개의 기록</span><span class="graphic" aria-hidden="true"></span></button>`;}
 function renderHome(){app.innerHTML=`<div class="eyebrow">YOUR PERSONAL K-POP DATABASE / VOL. 001</div><h1 class="main-title">Archive the<br><em>Next Era.</em></h1><p class="intro">새롭게 데뷔하는 아이돌 그룹부터 발매 앨범까지.<br>필요한 정보를 차곡차곡 기록하고, 언제든 다시 꺼내 보는 나만의 K-POP 아카이브.</p><div class="section-head"><div><h2>Explore Collections</h2><p>카테고리를 선택해 새로운 기록을 추가하세요.</p></div><span class="smallcaps">SELECT A CATEGORY ↘</span></div><div class="category-grid">${categoryTile('girl',1)}${categoryTile('boy',2)}${categoryTile('album',3)}</div><div class="stats-bar"><div class="stat"><span>GIRL GROUP</span><strong>${count('girl')}</strong></div><div class="stat"><span>BOY GROUP</span><strong>${count('boy')}</strong></div><div class="stat"><span>ALBUM</span><strong>${count('album')}</strong></div></div><div class="section-head"><div><h2>Recently Archived</h2><p>가장 최근에 추가하거나 수정한 자료</p></div></div><div class="list-grid">${state.all.length?state.all.slice(0,6).map(recordCard).join(''):`<div class="empty"><strong>아직 보관된 자료가 없습니다.</strong><span>위의 카테고리를 눌러 첫 번째 기록을 만들어 보세요.</span></div>`}</div><p class="notice">* 클라우드 동기화 아카이브입니다. 자료는 모든 기기에서 동일하게 보이며, 등록·수정·삭제는 관리자 로그인 후 가능합니다.</p>`;}
 function cardTitle(r){return r.type==='album'?r.albumName:r.groupName;}
-function recordCard(r){const photo=r.type==='album'?r.albumCover:(r.groupPhoto||r.albumCover);const secondary=r.type==='album'?r.groupName:(r.company||r.debutAlbumName);return `<article class="record-card"><button class="record-open" data-action="detail" data-id="${esc(r.id)}"><div class="record-cover">${iconCover(photo,'IDOL')}<span class="record-tag">${meta[r.type].tag}</span></div><div class="record-info"><h3>${esc(cardTitle(r)||'이름 없는 기록')}</h3><p>${esc(secondary||'추가 정보 없음')} · ${esc(r.albumType||'앨범 미선택')}</p></div></button><div class="record-bottom"><span class="record-date">${prettyDate(r.debutDate||r.releaseDate||r.createdAt)}</span>${state.isAdmin?`<div><button class="text-button" data-action="edit" data-id="${esc(r.id)}">수정</button><button class="text-button danger" data-action="delete" data-id="${esc(r.id)}">삭제</button></div>`:""}</div></article>`;}
+function recordCard(r){const photo=r.type==='album'?r.albumCover:(r.groupPhoto||r.albumCover);const secondary=r.type==='album'?r.groupName:(r.company||r.debutAlbumName);return `<article class="record-card"><button class="record-open" data-action="detail" data-id="${esc(r.id)}"><div class="record-cover">${iconCover(photo,'IDOL',false)}<span class="record-tag">${meta[r.type].tag}</span></div><div class="record-info"><h3>${esc(cardTitle(r)||'이름 없는 기록')}</h3><p>${esc(secondary||'추가 정보 없음')} · ${esc(r.albumType||'앨범 미선택')}</p></div></button><div class="record-bottom"><span class="record-date">${prettyDate(r.debutDate||r.releaseDate||r.createdAt)}</span>${state.isAdmin?`<div><button class="text-button" data-action="edit" data-id="${esc(r.id)}">수정</button><button class="text-button danger" data-action="delete" data-id="${esc(r.id)}">삭제</button></div>`:""}</div></article>`;}
 function filteredRecords(){const q=state.search.trim().toLocaleLowerCase();return state.all.filter(r=>r.type===state.category).filter(r=>!q||[r.groupName,r.company,r.albumName,r.debutAlbumName,(r.tracks||[]).map(t=>t.name).join(' ')].some(x=>String(x||'').toLocaleLowerCase().includes(q)));}
 function renderRecordList(){const area=document.getElementById('record-list');if(!area)return;const records=filteredRecords();area.innerHTML=records.length?records.map(recordCard).join(''):`<div class="empty"><strong>${state.search?'검색 결과가 없습니다.':'아직 기록이 없습니다.'}</strong><span>${state.search?'다른 키워드로 검색해 보세요.':'새 기록 추가 버튼을 눌러 자료를 저장할 수 있습니다.'}</span></div>`;}
 function renderCategory(){const m=meta[state.category],type=state.category;app.innerHTML=`<button class="back-btn" data-action="home">← HOME</button><div class="page-top"><div><div class="eyebrow">THE ARCHIVE / ${m.accent}</div><h1 class="page-heading ${type}">NEW <span class="accent">${type==='album'?'ALBUM':type==='girl'?'GIRL GROUP':'BOY GROUP'}</span></h1><p class="page-description">${m.korean} 정보를 등록하고 관리하는 공간 · 총 ${count(type)}개 기록</p></div>${state.isAdmin?`<button class="primary-btn" data-action="new" data-type="${type}"><span style="font-size:20px;line-height:0">+</span> 새 기록 추가</button>`:""}</div><div class="searchbar"><span>⌕</span><input id="search-records" aria-label="기록 검색" type="search" value="${esc(state.search)}" placeholder="그룹명, 앨범명, 회사명, 수록곡으로 검색"></div><div id="record-list" class="list-grid"></div>`;renderRecordList();}
@@ -252,7 +286,7 @@ state.saving=true;const btn=document.getElementById('save-button');if(btn){btn.d
 try{d.updatedAt=new Date().toISOString();if(d.type!=='album')syncMembers(d.memberCount);if(!d.tracks.some(x=>x.title)&&d.tracks.length)d.tracks[0].title=true;await put(d);await reload();toast('클라우드에 저장했습니다.');showDetail(d.id);}catch(err){console.error(err);toast('저장 실패: '+(err.message||'권한과 연결을 확인하세요.'));}finally{state.saving=false;if(document.getElementById('save-button'))document.getElementById('save-button').disabled=false;}}
 function metaItem(label,value){return `<div class="meta-item"><span>${label}</span><strong>${esc(value||'미입력')}</strong></div>`;}
 function urlForDisplay(value){if(!validVideoLink(value))return '';try{const u=new URL(value);return u.href;}catch{return '';}}
-function renderDetail(){const r=state.all.find(v=>v.id===state.recordId);if(!r){goCategory(state.category);return;}const isAlbum=r.type==='album';const primaryImage=isAlbum?r.albumCover:(r.groupPhoto||r.albumCover);const albumName=isAlbum?r.albumName:r.debutAlbumName;app.innerHTML=`<button class="back-btn" data-action="category" data-type="${r.type}">← ${meta[r.type].title} 목록</button><div class="page-top"><div><div class="eyebrow">ARCHIVED RECORD / ${meta[r.type].title}</div><h1 class="page-heading">Archive <span class="accent">Details.</span></h1></div>${state.isAdmin?`<button class="primary-btn" data-action="edit" data-id="${esc(r.id)}">✎ 기록 수정</button>`:""}</div><div class="detail-shell"><div><article class="detail-hero"><div class="detail-banner">${iconCover(primaryImage,'IDOL')}</div><div class="detail-info"><div class="eyebrow">${meta[r.type].title}</div><h2 class="detail-title">${esc(cardTitle(r))}</h2><div class="detail-sub">${esc(isAlbum?r.groupName:(r.company||'소속사 미입력'))}</div><div class="meta-grid">${isAlbum?`${metaItem('아티스트 / 그룹',r.groupName)}${metaItem('발매일',r.releaseDate?prettyDate(r.releaseDate):'미입력')}`:`${metaItem('소속사',r.company)}${metaItem('데뷔일',r.debutDate?prettyDate(r.debutDate):'미입력')}${metaItem('멤버 수',`${r.memberCount||0}명`)}${metaItem('데뷔 앨범명',albumName)}`}${metaItem('앨범 종류',r.albumType)}${metaItem('수록곡 수',`${(r.tracks||[]).length}곡`)}</div></div></article>${isAlbum?'':`<section class="data-card"><h3>멤버 정보 · ${(r.members||[]).length}명</h3><div class="member-table">${(r.members||[]).map((m,i)=>`<div class="member-pill"><div class="member-display-image">${imgURL(m.photo)?`<img src="${esc(imgURL(m.photo))}" alt="${esc(m.name||'멤버')} 사진">`:'<span>NO IMAGE</span>'}</div><div class="member-display-text"><strong>${String(i+1).padStart(2,'0')} · ${esc(m.name||'이름 미입력')}</strong><small>${esc([m.birthYear,m.nationality,m.position].filter(Boolean).join(' · ')||'추가 정보 없음')}</small></div></div>`).join('')}</div></section>`}<section class="data-card"><h3>Tracklist · ${(r.tracks||[]).length} tracks</h3>${(r.tracks||[]).map((t,i)=>`<div class="track-display"><span class="num">${String(i+1).padStart(2,'0')}</span><div class="track-info"><strong>${esc(t.name||'곡명 미입력')}${t.title?'<span class="pill">TITLE</span>':''}</strong><small>${esc(t.genre||'장르 미입력')}</small></div>${urlForDisplay(t.youtube||'')?`<a href="${esc(urlForDisplay(t.youtube))}" target="_blank" rel="noopener noreferrer">YouTube ↗</a>`:''}</div>`).join('')}</section></div><aside class="detail-secondary"><div class="eyebrow">ALBUM ARTWORK</div>${iconCover(r.albumCover,'ALBUM')}<h3>${esc(albumName||'앨범명 미입력')}</h3><p>${esc(r.albumType||'앨범 종류 미입력')}</p>${state.isAdmin?`<button class="secondary-btn" data-action="edit" data-id="${esc(r.id)}">이 기록 수정하기</button><button class="secondary-btn" data-action="delete" data-id="${esc(r.id)}" style="color:#cf6776">기록 삭제하기</button>`:""}</aside></div>`;}
+function renderDetail(){const r=state.all.find(v=>v.id===state.recordId);if(!r){goCategory(state.category);return;}const isAlbum=r.type==='album';const primaryImage=isAlbum?r.albumCover:(r.groupPhoto||r.albumCover);const albumName=isAlbum?r.albumName:r.debutAlbumName;app.innerHTML=`<button class="back-btn" data-action="category" data-type="${r.type}">← ${meta[r.type].title} 목록</button><div class="page-top"><div><div class="eyebrow">ARCHIVED RECORD / ${meta[r.type].title}</div><h1 class="page-heading">Archive <span class="accent">Details.</span></h1></div>${state.isAdmin?`<button class="primary-btn" data-action="edit" data-id="${esc(r.id)}">✎ 기록 수정</button>`:""}</div><div class="detail-shell"><div><article class="detail-hero"><div class="detail-banner">${iconCover(primaryImage,'IDOL')}</div><div class="detail-info"><div class="eyebrow">${meta[r.type].title}</div><h2 class="detail-title">${esc(cardTitle(r))}</h2><div class="detail-sub">${esc(isAlbum?r.groupName:(r.company||'소속사 미입력'))}</div><div class="meta-grid">${isAlbum?`${metaItem('아티스트 / 그룹',r.groupName)}${metaItem('발매일',r.releaseDate?prettyDate(r.releaseDate):'미입력')}`:`${metaItem('소속사',r.company)}${metaItem('데뷔일',r.debutDate?prettyDate(r.debutDate):'미입력')}${metaItem('멤버 수',`${r.memberCount||0}명`)}${metaItem('데뷔 앨범명',albumName)}`}${metaItem('앨범 종류',r.albumType)}${metaItem('수록곡 수',`${(r.tracks||[]).length}곡`)}</div></div></article>${isAlbum?'':`<section class="data-card"><h3>멤버 정보 · ${(r.members||[]).length}명</h3><div class="member-table">${(r.members||[]).map((m,i)=>`<div class="member-pill"><div class="member-display-image">${imgURL(m.photo)?`<img class="zoomable-image" role="button" tabindex="0" title="클릭하여 원본 이미지 보기" aria-label="${esc(m.name||'멤버')} 사진 크게 보기" src="${esc(imgURL(m.photo))}" alt="${esc(m.name||'멤버')} 사진">`:'<span>NO IMAGE</span>'}</div><div class="member-display-text"><strong>${String(i+1).padStart(2,'0')} · ${esc(m.name||'이름 미입력')}</strong><small>${esc([m.birthYear,m.nationality,m.position].filter(Boolean).join(' · ')||'추가 정보 없음')}</small></div></div>`).join('')}</div></section>`}</div><aside class="detail-secondary"><div class="eyebrow">ALBUM ARTWORK</div>${iconCover(r.albumCover,'ALBUM')}<h3>${esc(albumName||'앨범명 미입력')}</h3><p>${esc(r.albumType||'앨범 종류 미입력')}</p><div class="album-tracklist"><h4>TRACKLIST <span>· ${(r.tracks||[]).length} tracks</span></h4>${(r.tracks||[]).map((t,i)=>`<div class="track-display"><span class="num">${String(i+1).padStart(2,'0')}</span><div class="track-info"><strong>${esc(t.name||'곡명 미입력')}${t.title?'<span class="pill">TITLE</span>':''}</strong><small>${esc(t.genre||'장르 미입력')}</small></div>${urlForDisplay(t.youtube||'')?`<a href="${esc(urlForDisplay(t.youtube))}" target="_blank" rel="noopener noreferrer">YouTube ↗</a>`:''}</div>`).join('')}</div>${state.isAdmin?`<button class="secondary-btn" data-action="edit" data-id="${esc(r.id)}">이 기록 수정하기</button><button class="secondary-btn" data-action="delete" data-id="${esc(r.id)}" style="color:#cf6776">기록 삭제하기</button>`:""}</aside></div>`;}
 async function deleteRecord(id){if(!state.isAdmin)return goLogin();const r=state.all.find(x=>x.id===id);if(!r)return;if(!confirm(`‘${cardTitle(r)||'기록'}’ 자료를 삭제할까요?\n삭제된 기록은 복구할 수 없습니다.`))return;try{await remove(id);await reload();toast('기록을 삭제했습니다.');goCategory(r.type);}catch(e){console.error(e);toast('삭제하지 못했습니다.');}}
 function blobToDataURL(blob){return new Promise((resolve,reject)=>{if(!blob)return resolve(null);const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);});}
 function dataURLToBlob(url){if(!url||typeof url!=='string')return null;const m=/^data:([^;,]+)?(;base64)?,(.*)$/s.exec(url);if(!m)throw Error('이미지 데이터 형식이 잘못되었습니다.');if(!m[2])return new Blob([decodeURIComponent(m[3])],{type:m[1]||'application/octet-stream'});const b=atob(m[3]);const bytes=new Uint8Array(b.length);for(let i=0;i<b.length;i++)bytes[i]=b.charCodeAt(i);return new Blob([bytes],{type:m[1]||'application/octet-stream'});}
@@ -385,6 +419,33 @@ document.addEventListener('paste',event=>{
  if(!target){toast('먼저 붙여넣을 사진 칸의 ‘복사한 이미지 붙여넣기’ 버튼을 선택해 주세요.');return;}
  if(acceptImageFile(image,target))toast('이미지를 붙여넣었습니다. 기록 저장하기를 눌러 서버에 저장하세요.');
 });
+function openImageLightbox(img){
+ if(!img?.src)return;
+ const dialog=document.getElementById('image-lightbox');
+ const photo=document.getElementById('lightbox-photo');
+ const original=document.getElementById('image-original-link');
+ if(!dialog||!photo||!original)return;
+ const url=img.currentSrc||img.src;
+ photo.src=url;photo.alt=img.alt||'원본 이미지';
+ original.href=url;
+ if(!dialog.open)dialog.showModal();
+}
+document.getElementById('image-lightbox-close').addEventListener('click',()=>document.getElementById('image-lightbox').close());
+document.getElementById('image-lightbox').addEventListener('click',event=>{
+ if(event.target===event.currentTarget)event.currentTarget.close();
+});
+document.addEventListener('click',event=>{
+ const img=event.target.closest?.('img.zoomable-image');
+ if(!img)return;
+ event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+ openImageLightbox(img);
+},true);
+document.addEventListener('keydown',event=>{
+ const img=event.target.closest?.('img.zoomable-image[tabindex="0"]');
+ if(!img||!['Enter',' '].includes(event.key))return;
+ event.preventDefault();event.stopPropagation();
+ openImageLightbox(img);
+},true);
 document.addEventListener('click',async e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const action=btn.dataset.action;if(state.view==='form'&&['add-track','remove-track','mark-title'].includes(action))syncEditorFields();switch(action){case'home':goHome();break;case'category':goCategory(btn.dataset.type);break;case'new':beginNew(btn.dataset.type);break;case'detail':showDetail(btn.dataset.id);break;case'edit':beginEdit(btn.dataset.id);break;case'delete':await deleteRecord(btn.dataset.id);break;case'add-track':if(state.draft.tracks.length>=100){toast('트랙은 최대 100곡까지 추가할 수 있습니다.');break;}state.draft.tracks.push(defaultTrack(1));renderTracks();break;case'remove-track':if(state.draft.tracks.length>1){const removed=state.draft.tracks.pop();if(removed.title)state.draft.tracks[0].title=true;renderTracks();}else toast('트랙은 최소 1곡이 필요합니다.');break;case'mark-title':{const i=Number(btn.dataset.index);state.draft.tracks.forEach((t,j)=>t.title=i===j);renderTracks();break;}case'paste-image':await pasteImageFromClipboard(btn);break;case'export':await exportBackup();break;case'import':if(state.isAdmin)document.getElementById('import-file').click();else goLogin();break;case'login':goLogin();break;case'logout':await logout();break;}});
 document.addEventListener('input',e=>{
  const target=e.target;
