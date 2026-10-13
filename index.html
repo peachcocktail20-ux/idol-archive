@@ -92,32 +92,45 @@ async function getAll(){
 }
 async function put(record){
  if(!state.isAdmin)throw Error('관리자만 기록을 저장할 수 있습니다.');
- const old=state.all.find(r=>r.id===record.id);
- const r={...record};
+ const old=state.all.find(item=>item.id===record.id);
+ const r={...record,members:(record.members||[]).map(m=>({...m}))};
  const added=[];
- const oldPaths=[];
+ async function uploadPhoto(file,slot){
+  const mime=file.type||'image/jpeg';
+  const extensions={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif'};
+  if(!extensions[mime])throw Error('사진은 JPG, PNG, WEBP, GIF만 사용할 수 있습니다.');
+  if(file.size>5*1024*1024)throw Error('사진 한 장은 최대 5MB까지 등록할 수 있습니다.');
+  const path=`${r.id}/${slot}-${newId()}.${extensions[mime]}`;
+  const {error}=await client.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:mime});
+  if(error)throw error;
+  added.push(path);
+  const {data}=client.storage.from(BUCKET).getPublicUrl(path);
+  return {url:data.publicUrl,path};
+ }
  try{
   for(const field of ['groupPhoto','albumCover']){
    if(r[field] instanceof Blob){
-    const blob=r[field];
-    const mime=blob.type||'image/jpeg';
-    const exts={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif'};
-    if(!exts[mime])throw Error('사진은 JPG, PNG, WEBP, GIF만 사용할 수 있습니다.');
-    if(blob.size>5*1024*1024)throw Error('사진 한 장은 최대 5MB까지 등록할 수 있습니다.');
-    const path=`${r.id}/${field}-${newId()}.${exts[mime]}`;
-    const {error}=await client.storage.from(BUCKET).upload(path,blob,{cacheControl:'3600',upsert:false,contentType:mime});
-    if(error)throw error;
-    added.push(path);
-    const {data}=client.storage.from(BUCKET).getPublicUrl(path);
-    r[field]=data.publicUrl;
-    r[field+'Path']=path;
-    if(old?.[field+'Path'])oldPaths.push(old[field+'Path']);
+    const uploaded=await uploadPhoto(r[field],field);
+    r[field]=uploaded.url;
+    r[field+'Path']=uploaded.path;
+   }
+  }
+  for(let i=0;i<r.members.length;i++){
+   const member=r.members[i];
+   if(member.photo instanceof Blob){
+    const uploaded=await uploadPhoto(member.photo,`member-${i+1}`);
+    member.photo=uploaded.url;
+    member.photoPath=uploaded.path;
    }
   }
   const payload=JSON.parse(JSON.stringify(r));
   const {error}=await client.from(TABLE).upsert({id:r.id,type:r.type,payload,updated_at:r.updatedAt||new Date().toISOString()},{onConflict:'id'});
   if(error)throw error;
-  if(oldPaths.length)await cleanupImages(oldPaths);
+  if(old){
+   const keep=new Set([r.groupPhotoPath,r.albumCoverPath,...r.members.map(m=>m.photoPath)].filter(Boolean));
+   const previous=[old.groupPhotoPath,old.albumCoverPath,...(old.members||[]).map(m=>m.photoPath)];
+   await cleanupImages(previous.filter(p=>p&&!keep.has(p)));
+  }
   return payload;
  }catch(error){if(added.length)await cleanupImages(added);throw error;}
 }
@@ -131,7 +144,7 @@ async function remove(id){
  const r=state.all.find(x=>x.id===id);
  const {error}=await client.from(TABLE).delete().eq('id',id);
  if(error)throw error;
- await cleanupImages([r?.groupPhotoPath,r?.albumCoverPath].filter(Boolean));
+ await cleanupImages([r?.groupPhotoPath,r?.albumCoverPath,...(r?.members||[]).map(m=>m.photoPath)].filter(Boolean));
 }
 async function reload(){state.all=(await getAll()).sort((a,b)=>String(b.updatedAt||b.createdAt).localeCompare(String(a.updatedAt||a.createdAt)));}
 async function refreshAuth(){
