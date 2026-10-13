@@ -4,10 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="color-scheme" content="light" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 <title>IDOL INDEX | K-POP Archive</title>
 <style>
 :root{--bg:#f7f7f5;--card:#fff;--ink:#202321;--muted:#767b7b;--line:#e7e8e4;--pink:#ee628c;--blue:#5576e9;--purple:#9b70d4;--dark:#252b34;--shadow:0 18px 60px rgba(37,43,52,.055)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:14px;line-height:1.55}button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #85a3fa;outline-offset:3px}a{color:inherit;text-decoration:none}img{display:block;max-width:100%}.hidden{display:none!important}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:14px;line-height:1.55}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #85a3fa;outline-offset:3px}a{color:inherit;text-decoration:none}img{display:block;max-width:100%}.hidden{display:none!important}
 .shell{max-width:1220px;margin:auto;padding:0 36px}.topbar{background:rgba(255,255,255,.91);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;backdrop-filter:blur(14px)}.topbar-inner{height:76px;display:flex;gap:26px;align-items:center;justify-content:space-between}.logo{border:0;background:none;padding:0;text-align:left;display:flex;align-items:center;gap:10px;white-space:nowrap;color:var(--ink)}.logo-symbol{width:31px;height:31px;background:#242b35;color:white;border-radius:9px;display:grid;place-items:center;font-size:13px;font-weight:900;letter-spacing:-1px}.logo-word{font-size:17px;letter-spacing:-.75px;font-weight:850}.logo-word span{color:#ef739a}.main-nav{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.nav-link{border:0;border-radius:50px;padding:10px 13px;background:transparent;color:#747977;font-size:11px;font-weight:800;letter-spacing:.04em}.nav-link:hover,.nav-link.active{background:#efefed;color:#252b34}.header-actions{display:flex;gap:7px}.mini-btn{background:white;border:1px solid #e4e6e4;border-radius:10px;padding:9px 11px;color:#444a4b;font-weight:700;white-space:nowrap;font-size:12px}.mini-btn:hover{border-color:#a8afb5;background:#fafafa}
 main{padding:49px 0 95px;min-height:calc(100vh - 145px)}.eyebrow{color:#8b9090;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:850;margin-bottom:14px}.main-title{font-family:Georgia,"Times New Roman",serif;font-size:clamp(40px,5vw,70px);font-weight:500;letter-spacing:-.052em;line-height:1.05;margin:0}.main-title em{font-style:italic;color:#ec6991}.intro{margin:20px 0 0;color:#73797b;font-size:15px;line-height:1.8;max-width:690px}.smallcaps{font-size:10px;font-weight:850;letter-spacing:.16em;color:#a0a5a5}.section-head{display:flex;justify-content:space-between;gap:20px;align-items:center;margin:46px 0 19px}.section-head h2{margin:0;font-size:19px;letter-spacing:-.045em}.section-head p{margin:5px 0 0;color:var(--muted);font-size:12px}.category-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.category{position:relative;overflow:hidden;isolation:isolate;text-align:left;border:1px solid rgba(0,0,0,.035);border-radius:20px;height:260px;padding:27px;background:#fce7ed;color:#552e3b;transition:transform .2s,box-shadow .2s}.category:hover{transform:translateY(-4px);box-shadow:0 22px 35px rgba(41,47,51,.1)}.category.boy{background:#e1e9ff;color:#293f72}.category.album{background:#eae2f9;color:#50366e}.cat-kicker{position:relative;z-index:1;font-size:11px;font-weight:850;letter-spacing:.14em;opacity:.65}.cat-title{position:relative;z-index:1;display:block;margin:17px 0;font-size:clamp(22px,2.8vw,34px);line-height:1.13;letter-spacing:-.05em;font-weight:850}.cat-meta{position:absolute;z-index:1;bottom:25px;left:27px;font-weight:750;font-size:12px;display:flex;gap:10px;align-items:center}.cat-arrow{display:inline-grid;place-items:center;width:31px;height:31px;border:1px solid currentColor;border-radius:50%}.graphic{position:absolute;bottom:-94px;right:-60px;width:250px;height:250px;border:35px solid rgba(255,255,255,.5);border-radius:50%;transform:rotate(20deg)}.category.boy .graphic{border-radius:38%;transform:rotate(45deg)}.category.album .graphic{width:210px;height:210px;right:-5px;bottom:-30px;border:0;background:radial-gradient(circle,#fff 0 9%,#d4c4ed 10% 11%,#fff6 11% 14%,#b49ad9 15% 100%);box-shadow:-13px 10px 0 rgba(255,255,255,.3)}
 .stats-bar{display:grid;grid-template-columns:repeat(3,1fr);margin-top:25px;background:#fff;border:1px solid var(--line);border-radius:17px}.stat{padding:23px 28px;display:flex;align-items:baseline;justify-content:space-between;gap:8px}.stat:not(:last-child){border-right:1px solid var(--line)}.stat strong{font-size:30px;letter-spacing:-.07em}.stat span{font-size:12px;color:var(--muted)}.list-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.empty{border:1px dashed #d5d8d5;border-radius:16px;min-height:172px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;color:#8b9191;grid-column:1/-1}.empty strong{color:#4b5352;font-size:15px}.empty span{margin-top:7px;font-size:12px}.record-card{background:white;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(40,46,50,.02)}.record-open{width:100%;text-align:left;background:transparent;border:0;padding:0;color:inherit}.record-cover{height:188px;background:#eef0f1;position:relative;overflow:hidden}.record-cover img{width:100%;height:100%;object-fit:cover;transition:transform .3s}.record-open:hover img{transform:scale(1.035)}.record-fallback{height:100%;display:flex;align-items:center;justify-content:center;color:#c7cacc;letter-spacing:.2em;font-weight:900;font-size:25px;background:linear-gradient(125deg,#f3edf4,#e7edf6)}.record-tag{position:absolute;top:13px;left:13px;background:#fff;color:#555;border-radius:30px;font-size:10px;font-weight:850;padding:5px 10px;box-shadow:0 3px 9px #0001}.record-info{padding:17px 18px 18px}.record-info h3{font-size:18px;line-height:1.3;letter-spacing:-.04em;margin:0 0 6px}.record-info p{font-size:12px;color:var(--muted);margin:0}.record-bottom{border-top:1px solid var(--line);padding:10px 17px;display:flex;justify-content:space-between;align-items:center}.record-date{font-size:11px;color:#a0a5a4}.text-button{border:0;background:none;color:#5b6267;font-weight:800;font-size:11px;padding:5px 7px}.text-button:hover{color:#1a242d}.text-button.danger:hover{color:#c74052}
@@ -48,6 +50,7 @@ main{padding:49px 0 95px;min-height:calc(100vh - 145px)}.eyebrow{color:#8b9090;f
 .paste-hint{font-size:10px;line-height:1.55;color:#7b8686;margin:6px 0 0}
 .upload[data-paste-kind],.member-photo[data-paste-kind]{transition:border-color .2s}
 .upload.paste-selected,.member-photo.paste-selected{border-color:#9b70d4;box-shadow:0 0 0 3px #9b70d41f}
+.logo-word,.logo-symbol{font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
 </style>
 </head>
 <body>
@@ -221,7 +224,29 @@ function renderMembers(){
 }
 function renderTracks(){const el=document.getElementById('tracks-container');if(!el)return;document.getElementById('track-count').textContent=state.draft.tracks.length;el.innerHTML=state.draft.tracks.map((t,i)=>`<div class="track-row"><div class="track-top"><span class="track-number">TRACK ${String(i+1).padStart(2,'0')}</span><button type="button" class="title-toggle ${t.title?'is-title':''}" data-action="mark-title" data-index="${i}" aria-pressed="${!!t.title}">${t.title?'★ TITLE TRACK':'☆ 타이틀 지정'}</button></div><div class="track-fields"><div><label>곡명</label><input data-track-index="${i}" data-track-prop="name" value="${esc(t.name)}" placeholder="곡명 입력"></div><div><label>장르</label><input data-track-index="${i}" data-track-prop="genre" value="${esc(t.genre)}" placeholder="예: Dance Pop"></div><div class="youtube"><label>YouTube 링크</label><input data-track-index="${i}" data-track-prop="youtube" type="url" value="${esc(t.youtube)}" placeholder="https://www.youtube.com/watch?v=..."></div></div></div>`).join('');}
 function validVideoLink(link){if(!link.trim())return true;try{const url=new URL(link);return ['http:','https:'].includes(url.protocol)&&['youtube.com','www.youtube.com','m.youtube.com','music.youtube.com','youtu.be','www.youtu.be','www.youtube-nocookie.com','youtube-nocookie.com'].includes(url.hostname.toLowerCase());}catch{return false;}}
-async function saveForm(){if(state.saving)return;const d=state.draft;if(!d)return;const name=(d.type==='album'?d.albumName:d.groupName).trim();if(!name){toast(d.type==='album'?'앨범명을 입력하세요.':'그룹명을 입력하세요.');document.getElementById(d.type==='album'?'field-albumName':'field-groupName')?.focus();return;}
+// Keep draft data in sync with live input values, including Korean IME commits.
+function syncEditorInput(target){
+ if(!state.draft||!target)return;
+ if(target.hasAttribute('data-field')){
+  const field=target.dataset.field;
+  if(Object.prototype.hasOwnProperty.call(state.draft,field))state.draft[field]=target.value;
+ }
+ if(target.hasAttribute('data-member-index')){
+  const index=Number(target.dataset.memberIndex),member=state.draft.members?.[index],prop=target.dataset.memberProp;
+  if(member&&['name','birthYear','nationality','position'].includes(prop))member[prop]=target.value;
+ }
+ if(target.hasAttribute('data-track-index')){
+  const index=Number(target.dataset.trackIndex),track=state.draft.tracks?.[index],prop=target.dataset.trackProp;
+  if(track&&['name','genre','youtube'].includes(prop))track[prop]=target.value;
+ }
+}
+function syncEditorFields(){
+ if(!state.draft)return;
+ const editor=document.getElementById('editor');
+ if(!editor)return;
+ editor.querySelectorAll('[data-field], [data-member-index], [data-track-index]').forEach(syncEditorInput);
+}
+async function saveForm(){if(state.saving)return;syncEditorFields();const d=state.draft;if(!d)return;const name=(d.type==='album'?d.albumName:d.groupName).trim();if(!name){toast(d.type==='album'?'앨범명을 입력하세요.':'그룹명을 입력하세요.');document.getElementById(d.type==='album'?'field-albumName':'field-groupName')?.focus();return;}
 const bad=(d.tracks||[]).findIndex(t=>!validVideoLink(t.youtube||''));if(bad>=0){toast(`TRACK ${bad+1}의 유튜브 주소를 확인하세요.`);return;}
 state.saving=true;const btn=document.getElementById('save-button');if(btn){btn.disabled=true;btn.textContent='클라우드에 저장하는 중…';}
 try{d.updatedAt=new Date().toISOString();if(d.type!=='album')syncMembers(d.memberCount);if(!d.tracks.some(x=>x.title)&&d.tracks.length)d.tracks[0].title=true;await put(d);await reload();toast('클라우드에 저장했습니다.');showDetail(d.id);}catch(err){console.error(err);toast('저장 실패: '+(err.message||'권한과 연결을 확인하세요.'));}finally{state.saving=false;if(document.getElementById('save-button'))document.getElementById('save-button').disabled=false;}}
@@ -360,17 +385,29 @@ document.addEventListener('paste',event=>{
  if(!target){toast('먼저 붙여넣을 사진 칸의 ‘복사한 이미지 붙여넣기’ 버튼을 선택해 주세요.');return;}
  if(acceptImageFile(image,target))toast('이미지를 붙여넣었습니다. 기록 저장하기를 눌러 서버에 저장하세요.');
 });
-document.addEventListener('click',async e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const action=btn.dataset.action;switch(action){case'home':goHome();break;case'category':goCategory(btn.dataset.type);break;case'new':beginNew(btn.dataset.type);break;case'detail':showDetail(btn.dataset.id);break;case'edit':beginEdit(btn.dataset.id);break;case'delete':await deleteRecord(btn.dataset.id);break;case'add-track':if(state.draft.tracks.length>=100){toast('트랙은 최대 100곡까지 추가할 수 있습니다.');break;}state.draft.tracks.push(defaultTrack(1));renderTracks();break;case'remove-track':if(state.draft.tracks.length>1){const removed=state.draft.tracks.pop();if(removed.title)state.draft.tracks[0].title=true;renderTracks();}else toast('트랙은 최소 1곡이 필요합니다.');break;case'mark-title':{const i=Number(btn.dataset.index);state.draft.tracks.forEach((t,j)=>t.title=i===j);renderTracks();break;}case'paste-image':await pasteImageFromClipboard(btn);break;case'export':await exportBackup();break;case'import':if(state.isAdmin)document.getElementById('import-file').click();else goLogin();break;case'login':goLogin();break;case'logout':await logout();break;}});
-document.addEventListener('input',e=>{const target=e.target;if(target.id==='search-records'){state.search=target.value;renderRecordList();return;}if(!state.draft)return;if(target.hasAttribute('data-field'))state.draft[target.dataset.field]=target.value;if(target.hasAttribute('data-member-index')){const m=state.draft.members[Number(target.dataset.memberIndex)];if(m)m[target.dataset.memberProp]=target.value;}if(target.hasAttribute('data-track-index')){const t=state.draft.tracks[Number(target.dataset.trackIndex)];if(t)t[target.dataset.trackProp]=target.value;}});
+document.addEventListener('click',async e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const action=btn.dataset.action;if(state.view==='form'&&['add-track','remove-track','mark-title'].includes(action))syncEditorFields();switch(action){case'home':goHome();break;case'category':goCategory(btn.dataset.type);break;case'new':beginNew(btn.dataset.type);break;case'detail':showDetail(btn.dataset.id);break;case'edit':beginEdit(btn.dataset.id);break;case'delete':await deleteRecord(btn.dataset.id);break;case'add-track':if(state.draft.tracks.length>=100){toast('트랙은 최대 100곡까지 추가할 수 있습니다.');break;}state.draft.tracks.push(defaultTrack(1));renderTracks();break;case'remove-track':if(state.draft.tracks.length>1){const removed=state.draft.tracks.pop();if(removed.title)state.draft.tracks[0].title=true;renderTracks();}else toast('트랙은 최소 1곡이 필요합니다.');break;case'mark-title':{const i=Number(btn.dataset.index);state.draft.tracks.forEach((t,j)=>t.title=i===j);renderTracks();break;}case'paste-image':await pasteImageFromClipboard(btn);break;case'export':await exportBackup();break;case'import':if(state.isAdmin)document.getElementById('import-file').click();else goLogin();break;case'login':goLogin();break;case'logout':await logout();break;}});
+document.addEventListener('input',e=>{
+ const target=e.target;
+ if(target.id==='search-records'){state.search=target.value;renderRecordList();return;}
+ syncEditorInput(target);
+});
+// Korean IME may finalize the last syllable only at compositionend or on focus loss.
+document.addEventListener('compositionend',e=>syncEditorInput(e.target));
+document.addEventListener('focusout',e=>syncEditorInput(e.target));
+// Prevent the IME confirmation Enter key from inadvertently submitting the entire editor.
+document.addEventListener('keydown',e=>{
+ if(e.key!=='Enter'||!e.target.closest?.('#editor'))return;
+ if(e.isComposing||e.keyCode===229||e.target.matches('input[type="text"],input[type="date"],input[type="url"],input[type="number"],input[type="search"]'))e.preventDefault();
+});
 document.addEventListener('change',event=>{
  const t=event.target;
  if(t.id==='import-file'){importBackup(t.files?.[0]);return;}
  if(!state.draft)return;
- if(t.dataset.action==='member-count'){
+ if(t.dataset.action==='member-count'){syncEditorFields();
   if(t.value==='more')syncMembers(Math.max(13,state.draft.memberCount));else syncMembers(Number(t.value));
   renderForm();return;
  }
- if(t.dataset.action==='member-extra'){syncMembers(Number(t.value)>=13?Number(t.value):13);renderForm();return;}
+ if(t.dataset.action==='member-extra'){syncEditorFields();syncMembers(Number(t.value)>=13?Number(t.value):13);renderForm();return;}
  const image=t.files?.[0];
  if(!image)return;
  if(t.dataset.memberImageIndex!==undefined){
