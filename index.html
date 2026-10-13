@@ -74,6 +74,111 @@ img.zoomable-image:focus-visible{outline:3px solid var(--purple);outline-offset:
 .detail-secondary .track-display .pill{display:inline-block;margin:4px 0 0 6px}
 @media(max-width:980px){.detail-shell{grid-template-columns:1fr}.detail-secondary{max-width:none}.image-lightbox{max-width:95vw}}
 @media(max-width:650px){.image-lightbox{padding:9px}.lightbox-toolbar{gap:8px;font-size:9px}.lightbox-actions{gap:8px}.lightbox-actions a{font-size:10px}.lightbox-note{font-size:10px}.image-lightbox>img{max-width:calc(95vw - 22px)}}
+
+/* Responsive refinements: navigation, form controls, media, and detail layouts */
+html,body{max-width:100%}
+.shell,.topbar-inner,.form-main,.section-card,.entry-details,.member-box,.detail-shell,.detail-hero,.detail-info,.detail-secondary,.data-card,.record-card,.record-info{min-width:0}
+.category-grid,.list-grid,.member-grid,.field-grid,.member-fields,.track-fields,.entry-row,.detail-shell,.member-table,.meta-grid{min-width:0}
+.record-card h3,.detail-title,.detail-sub,.detail-secondary h3,.record-info p,.page-heading,.main-title,.track-info strong,.member-display-text,.member-display-text small,.field label{overflow-wrap:anywhere}
+.record-open{display:block}
+.record-cover .catalog-image{cursor:pointer}
+.record-cover .catalog-image:hover{transform:scale(1.035)}
+.detail-shell img.zoomable-image{cursor:zoom-in}
+.detail-secondary .track-display .track-info{min-width:0}
+.detail-secondary .track-display .track-info strong{overflow-wrap:anywhere;word-break:break-word}
+.detail-secondary .track-display a{max-width:100%;overflow-wrap:anywhere}
+.form-layout>*{min-width:0}
+.field-grid>.field,.entry-details>.field-grid{min-width:0}
+.field input,.field select,.member-fields input,.track-fields input{max-width:100%;min-width:0}
+@media(max-width:900px){
+ .category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .category.album{grid-column:1/-1}
+}
+@media(max-width:760px){
+ .member-grid{grid-template-columns:minmax(0,1fr)}
+ .member-profile{grid-template-columns:105px minmax(0,1fr)}
+ .member-profile .member-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .detail-secondary{width:100%}
+ .detail-secondary .track-display{grid-template-columns:26px minmax(0,1fr)}
+}
+@media(max-width:650px){
+ .topbar{position:relative;top:auto}
+ .topbar-inner{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"brand" "actions" "nav";align-items:stretch;gap:10px;padding-block:12px}
+ .topbar-inner .logo{grid-area:brand;justify-self:start;max-width:100%}
+ .topbar-inner .header-actions{grid-area:actions;display:flex;justify-content:flex-start;align-items:center;flex-wrap:wrap;gap:7px;margin-left:0;width:100%}
+ .topbar-inner .header-actions .mini-btn{min-height:38px;white-space:normal;line-height:1.35;font-size:11px;padding:8px 11px}
+ .topbar-inner .main-nav{grid-area:nav;order:initial;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;width:100%;overflow:visible;justify-content:stretch}
+ .topbar-inner .nav-link{width:100%;min-width:0;min-height:39px;text-align:center;white-space:normal;overflow-wrap:break-word;padding:9px 5px;font-size:clamp(10px,3vw,12px);line-height:1.35;border:1px solid #edf0ee;background:#fafaf9}
+ .topbar-inner .nav-link.active{border-color:#dde0dd;background:#efefed}
+ .shell{padding-inline:clamp(12px,4vw,18px)}
+ main{padding-top:26px;padding-bottom:55px}
+ .main-title{font-size:clamp(36px,11vw,62px);line-height:1.1}
+ .page-heading{font-size:clamp(30px,9vw,46px);line-height:1.14}
+ .page-description,.intro{max-width:100%;overflow-wrap:anywhere}
+ .page-top{gap:13px;margin-bottom:21px}
+ .page-top .primary-btn{width:100%;white-space:normal;min-height:43px}
+ .section-head{margin-top:28px}
+ .category-grid,.list-grid{grid-template-columns:minmax(0,1fr)}
+ .category.album{grid-column:auto}
+ .category{min-width:0}
+ .section-card{padding:17px 15px;margin-bottom:12px}
+ .form-layout{gap:14px}
+ .entry-row{grid-template-columns:minmax(95px,34%) minmax(0,1fr);gap:13px;align-items:start}
+ .entry-row+.entry-row{margin-top:20px;padding-top:20px}
+ .entry-row .entry-photo{max-width:none;min-width:0}
+ .entry-row .entry-photo .upload{height:auto;min-height:108px;aspect-ratio:1/1}
+ .entry-photo .upload-label{padding:6px;gap:3px;font-size:10px;line-height:1.3}
+ .entry-photo .upload-label .upload-icon{height:30px;width:30px;font-size:17px}
+ .entry-photo .paste-image-btn{white-space:normal;overflow-wrap:anywhere;line-height:1.45;font-size:10px;padding:8px 4px}
+ .entry-photo .paste-hint{font-size:9px;overflow-wrap:anywhere}
+ .entry-details .field-grid,.entry-details .single-fields{grid-template-columns:minmax(0,1fr);gap:12px}
+ .entry-details .field-grid .field.full{grid-column:auto}
+ .field input,.field select,.member-fields input,.track-fields input,.searchbar input,.login-card input{font-size:16px}
+ .field input,.field select{min-height:43px}
+ .member-profile{grid-template-columns:minmax(76px,95px) minmax(0,1fr);gap:11px}
+ .member-profile .member-fields{grid-template-columns:minmax(0,1fr);gap:9px}
+ .member-box{padding:13px}
+ .member-photo{height:132px}
+ .member-fields input{min-height:41px}
+ .member-grid{gap:10px}
+ .member-table{grid-template-columns:minmax(0,1fr)}
+ .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+ .meta-item strong{font-size:13px}
+ .detail-banner{height:clamp(180px,55vw,265px)}
+ .detail-info{padding:19px 16px}
+ .detail-title{font-size:clamp(24px,7vw,34px)}
+ .detail-secondary{padding:17px 15px}
+ .detail-secondary img{max-width:100%;height:auto}
+ .detail-secondary .track-display a{white-space:normal;text-align:center}
+ .data-card{padding:17px 15px}
+ .track-fields{grid-template-columns:minmax(0,1fr)}
+ .track-row{min-width:0}
+ .track-top{gap:8px;flex-wrap:wrap}
+ .track-top .title-toggle{min-height:35px}
+ .sticky-actions{padding:15px}
+ .sticky-actions .primary-btn,.sticky-actions .secondary-btn{white-space:normal;min-height:44px}
+ .stats-bar .stat{gap:10px}
+ .footer{gap:5px;line-height:1.5;overflow-wrap:anywhere}
+ .image-lightbox{max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px);margin:auto}
+ .lightbox-toolbar{flex-wrap:wrap;justify-content:center;text-align:center}
+ .lightbox-actions{justify-content:center;flex-wrap:wrap}
+ .lightbox-actions button{min-height:40px;min-width:40px}
+ .image-lightbox>img{max-width:calc(100vw - 38px);max-height:calc(100dvh - 135px)}
+ .toast{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));max-width:none}
+}
+@media(max-width:380px){
+ .topbar-inner{gap:8px}
+ .section-card{padding-inline:12px}
+ .entry-row{grid-template-columns:minmax(88px,35%) minmax(0,1fr);gap:10px}
+ .entry-row .entry-photo .upload{min-height:88px}
+ .entry-photo .paste-image-btn{font-size:9px;padding:7px 3px}
+ .member-profile{grid-template-columns:78px minmax(0,1fr);gap:10px}
+ .member-photo{height:116px}
+ .member-box{padding:11px}
+ .meta-grid{grid-template-columns:minmax(0,1fr)}
+ .main-title{font-size:clamp(32px,10vw,40px)}
+ .lightbox-toolbar{font-size:9px}
+}
 </style>
 </head>
 <body>
@@ -118,7 +223,7 @@ function imgURL(data){
  if(typeof data==='string'&&/^https:\/\//.test(data))return data;
  return '';
 }
-function iconCover(blob,text='IMG',focusable=true){const src=imgURL(blob);return src?`<img class="zoomable-image" src="${esc(src)}" alt="앨범/그룹 이미지" ${focusable?'role="button" tabindex="0" aria-label="사진 크게 보기"':''} title="클릭하여 원본 이미지 보기">`:`<div class="record-fallback">${esc(text)}</div>`;}
+function iconCover(blob,text='IMG',focusable=true){const src=imgURL(blob);return src?`<img class="${focusable?'zoomable-image':'catalog-image'}" src="${esc(src)}" alt="앨범/그룹 이미지" ${focusable?'role="button" tabindex="0" aria-label="사진 크게 보기" title="클릭하여 원본 이미지 보기"':'title="상세 페이지 보기"'}>`:`<div class="record-fallback">${esc(text)}</div>`;}
 function defaultTrack(i){return {name:'',genre:'',youtube:'',title:i===0};}
 function newDraft(type){return {id:newId(),type,groupName:'',company:'',debutDate:'',memberCount:2,members:[blankMember(),blankMember()],debutAlbumName:'',albumName:'',releaseDate:'',albumType:'미니',tracks:[defaultTrack(0)],groupPhoto:null,albumCover:null,createdAt:new Date().toISOString(),updatedAt:''};}
 function blankMember(){return {name:'',birthYear:'',nationality:'',position:'',photo:null,photoPath:null};}
@@ -420,7 +525,7 @@ document.addEventListener('paste',event=>{
  if(acceptImageFile(image,target))toast('이미지를 붙여넣었습니다. 기록 저장하기를 눌러 서버에 저장하세요.');
 });
 function openImageLightbox(img){
- if(!img?.src)return;
+ if(state.view!=='detail'||!img?.closest?.('.detail-shell')||!img.src)return;
  const dialog=document.getElementById('image-lightbox');
  const photo=document.getElementById('lightbox-photo');
  const original=document.getElementById('image-original-link');
@@ -436,13 +541,13 @@ document.getElementById('image-lightbox').addEventListener('click',event=>{
 });
 document.addEventListener('click',event=>{
  const img=event.target.closest?.('img.zoomable-image');
- if(!img)return;
+ if(!img||state.view!=='detail'||!img.closest('.detail-shell'))return;
  event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
  openImageLightbox(img);
 },true);
 document.addEventListener('keydown',event=>{
  const img=event.target.closest?.('img.zoomable-image[tabindex="0"]');
- if(!img||!['Enter',' '].includes(event.key))return;
+ if(!img||state.view!=='detail'||!img.closest('.detail-shell')||!['Enter',' '].includes(event.key))return;
  event.preventDefault();event.stopPropagation();
  openImageLightbox(img);
 },true);
