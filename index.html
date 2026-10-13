@@ -237,13 +237,13 @@ html,body{max-width:100%}
  .category-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
  .category,.category.album{
   grid-column:auto;display:flex;flex-direction:column;justify-content:center;
-  min-height:113px;height:113px;padding:16px 19px;border:1px solid rgba(255,255,255,.8);
+  min-height:148px;height:148px;padding:19px 21px;border:1px solid rgba(255,255,255,.8);
   border-radius:19px;box-shadow:0 5px 18px rgba(55,59,68,.025)
  }
  .category.girl{background:#fbe5ed}.category.boy{background:#e5ebfb}.category.album{background:#ede5f7}
  .cat-kicker{font-size:9px;line-height:1.2;letter-spacing:.12em}
- .cat-title{font-size:21px;line-height:1.04;letter-spacing:-.045em;margin:8px 0 7px}
- .cat-meta{position:static;gap:7px;font-size:10px;font-weight:700}
+ .cat-title{font-size:20px;line-height:1.17;letter-spacing:-.035em;margin:10px 0 9px}
+ .cat-meta{position:static;gap:8px;font-size:10px;line-height:1.35;font-weight:700}
  .cat-arrow{width:20px;height:20px;font-size:12px}
  .category .graphic{width:115px;height:115px;right:-20px;bottom:-45px;border-width:17px;opacity:.75}
  .category.boy .graphic{border-radius:35%;transform:rotate(36deg)}
@@ -349,6 +349,8 @@ html,body{max-width:100%}
  .toast{bottom:calc(76px + env(safe-area-inset-bottom))}
 }
 @media(max-width:355px){
+ .category,.category.album{min-height:148px;height:148px;padding:18px 17px}
+ .cat-title{font-size:19px}
  .logo-word{font-size:15px}
  .topbar-inner .header-actions{gap:3px}
  .header-actions .mini-btn{padding:7px 8px;font-size:9px}
