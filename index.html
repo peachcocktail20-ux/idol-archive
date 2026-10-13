@@ -179,6 +179,189 @@ html,body{max-width:100%}
  .main-title{font-size:clamp(32px,10vw,40px)}
  .lightbox-toolbar{font-size:9px}
 }
+
+/* Mobile visual system v2: editorial cards and native-app-like navigation.
+   Scoped to small screens so desktop layout retains its original proportions. */
+@media(max-width:650px){
+ :root{--mobile-space:17px;--mobile-radius:19px}
+ html{scroll-padding-bottom:90px}
+ body{background:#f8f8f7;-webkit-text-size-adjust:100%;padding-bottom:env(safe-area-inset-bottom)}
+ .shell{width:100%;padding-left:var(--mobile-space);padding-right:var(--mobile-space)}
+ .topbar{position:relative;z-index:20;background:#fff;border-bottom:1px solid #f0f0ee;backdrop-filter:none}
+ .topbar-inner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:7px;min-height:68px;height:auto;padding-top:13px;padding-bottom:13px}
+ .topbar-inner .logo{display:inline-flex;order:0;flex:0 1 auto;gap:8px;min-width:0;margin:0}
+ .logo-symbol{width:29px;height:29px;border-radius:9px;font-size:11px}
+ .logo-word{font-size:17px;letter-spacing:-.7px}
+ .topbar-inner .header-actions{display:flex;order:1;flex:0 1 auto;margin:0 0 0 auto;width:auto;gap:5px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
+ .header-actions .mini-btn{background:#f6f6f4;border:1px solid #eeefed;color:#525861;border-radius:50px;padding:8px 10px;min-height:34px;font-size:10px;line-height:1.2;white-space:nowrap}
+ .topbar-inner .main-nav{
+  position:fixed;bottom:0;left:0;right:0;top:auto;z-index:90;
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  align-items:stretch;gap:0;width:100%;height:auto;margin:0;
+  padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
+  background:rgba(255,255,255,.97);border-top:1px solid #e8e9e7;
+  box-shadow:0 -8px 28px rgba(38,43,52,.045);overflow:visible;backdrop-filter:blur(18px)
+ }
+ .main-nav .nav-link{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:100%;min-width:0;min-height:49px;margin:0;padding:5px 2px;border:0;
+  border-radius:13px;background:transparent;color:#94999c;
+  text-align:center;font-size:0;line-height:0;white-space:normal;letter-spacing:0
+ }
+ .main-nav .nav-link:before{content:"";display:block;width:16px;height:16px;margin:0 0 7px;border:2px solid #9fa7ab;border-radius:50%;background:transparent}
+ .main-nav .nav-link:after{display:block;font-size:10px;line-height:1.2;font-weight:750;letter-spacing:.015em}
+ .main-nav [data-nav="home"]:after{content:"HOME"}
+ .main-nav [data-nav="girl"]:after{content:"GIRLS"}
+ .main-nav [data-nav="boy"]:after{content:"BOYS"}
+ .main-nav [data-nav="album"]:after{content:"ALBUM"}
+ .main-nav [data-nav="girl"]:before{border-color:#e885a5;background:#fce7ee}
+ .main-nav [data-nav="boy"]:before{border-color:#7799e7;background:#e4ebfd}
+ .main-nav [data-nav="album"]:before{border-color:#ac8fd7;background:#ebe5f6}
+ .main-nav .nav-link.active{background:#f3f3f1;color:#262d33}
+ .main-nav .nav-link.active:before{box-shadow:0 0 0 3px #ffffff;border-width:4px}
+ main.shell{padding-top:23px;padding-bottom:40px;min-height:calc(100vh - 210px)}
+ .home-hero{
+  position:relative;isolation:isolate;overflow:hidden;border:1px solid #f0edf0;
+  border-radius:24px;padding:25px 22px 27px;
+  background:linear-gradient(135deg,#fff 0%,#fff9fb 52%,#f6f4fa 100%);
+  box-shadow:0 7px 28px rgba(58,42,58,.035)
+ }
+ .home-hero:after{content:"";position:absolute;z-index:-1;width:180px;height:180px;right:-85px;top:-88px;border-radius:50%;border:27px solid rgba(242,202,219,.21)}
+ .home-hero .eyebrow{font-size:9px;letter-spacing:.13em;margin-bottom:17px;color:#ad8293}
+ .home-hero .main-title{font-size:clamp(38px,10.7vw,55px);line-height:1.08;letter-spacing:-.055em;overflow-wrap:normal}
+ .home-hero .intro{font-size:12px;line-height:1.75;color:#777d7d;margin:15px 0 0;max-width:305px}
+ .section-head{margin:27px 0 12px;gap:9px;align-items:center}
+ .section-head h2{font-size:17px;letter-spacing:-.04em}
+ .section-head p{font-size:11px;line-height:1.45}
+ .section-head .smallcaps{font-size:8px;text-align:right;letter-spacing:.07em;flex-shrink:0}
+ .category-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
+ .category,.category.album{
+  grid-column:auto;display:flex;flex-direction:column;justify-content:center;
+  min-height:113px;height:113px;padding:16px 19px;border:1px solid rgba(255,255,255,.8);
+  border-radius:19px;box-shadow:0 5px 18px rgba(55,59,68,.025)
+ }
+ .category.girl{background:#fbe5ed}.category.boy{background:#e5ebfb}.category.album{background:#ede5f7}
+ .cat-kicker{font-size:9px;line-height:1.2;letter-spacing:.12em}
+ .cat-title{font-size:21px;line-height:1.04;letter-spacing:-.045em;margin:8px 0 7px}
+ .cat-meta{position:static;gap:7px;font-size:10px;font-weight:700}
+ .cat-arrow{width:20px;height:20px;font-size:12px}
+ .category .graphic{width:115px;height:115px;right:-20px;bottom:-45px;border-width:17px;opacity:.75}
+ .category.boy .graphic{border-radius:35%;transform:rotate(36deg)}
+ .category.album .graphic{width:105px;height:105px;right:16px;bottom:8px;opacity:.53}
+ .stats-bar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px;border-radius:17px;overflow:hidden}
+ .stat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;min-width:0;padding:12px 5px}
+ .stat:not(:last-child){border-right:1px solid #eef0ed;border-bottom:0}
+ .stat span{font-size:9px;letter-spacing:.015em;white-space:nowrap}
+ .stat strong{font-size:23px;line-height:1.2;letter-spacing:-.06em}
+ .list-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .record-card{border:1px solid #edeeeb;border-radius:17px;box-shadow:0 5px 20px rgba(37,43,52,.035)}
+ .record-cover{height:auto;aspect-ratio:4/4.5}
+ .record-cover img{object-fit:cover}
+ .record-tag{top:9px;left:9px;font-size:8px;padding:4px 7px}
+ .record-info{padding:12px 11px 13px;min-width:0}
+ .record-info h3{font-size:14px;line-height:1.3;margin-bottom:5px}
+ .record-info p{font-size:10px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ .record-bottom{padding:8px 10px;align-items:center;gap:4px;flex-wrap:wrap}
+ .record-date{font-size:9px}
+ .record-bottom .text-button{font-size:10px;padding:4px 3px}
+ .page-top{margin-bottom:19px;gap:12px}
+ .page-heading{font-size:clamp(35px,10vw,48px);line-height:1.04;letter-spacing:-.055em;margin:7px 0 12px;overflow-wrap:normal}
+ .page-description{font-size:12px;line-height:1.6}
+ .page-top .primary-btn{width:auto;align-self:flex-start;border-radius:11px;font-size:12px;min-height:40px;padding:10px 15px}
+ .back-btn{font-size:11px;padding-bottom:12px}
+ .searchbar{margin-bottom:14px;border-radius:13px;padding:0 12px}
+ .searchbar input{font-size:16px;min-height:47px;padding:12px 0}
+ .form-layout,.detail-shell{grid-template-columns:minmax(0,1fr);gap:13px}
+ .section-card{padding:20px 17px;border-radius:20px;margin-bottom:12px;border-color:#ededeb;box-shadow:0 5px 18px rgba(29,35,40,.024)}
+ .form-section-head{margin-bottom:17px;align-items:center}
+ .form-section-head h2{font-size:16px;line-height:1.4}
+ .section-num{width:26px;height:26px;margin-right:7px}
+ .entry-row{display:grid;grid-template-columns:minmax(102px,36%) minmax(0,1fr);column-gap:14px;row-gap:13px;align-items:start}
+ .entry-row+.entry-row{margin-top:21px;padding-top:21px}
+ .entry-row .entry-photo{grid-column:1;grid-row:1/span 2;max-width:none;width:100%;min-width:0}
+ .entry-row .entry-photo .upload{height:auto;min-height:0;aspect-ratio:1 / 1;border-radius:12px}
+ .entry-photo .upload-label{padding:6px;gap:4px;font-size:10px}
+ .entry-photo .upload-label .upload-icon{width:33px;height:33px;font-size:18px}
+ .entry-photo .paste-image-btn{padding:9px 5px;font-size:10px;line-height:1.35;white-space:normal;border-radius:9px}
+ .entry-photo .paste-hint{display:none}
+ .entry-row .entry-details,.entry-row .entry-details .field-grid{display:contents}
+ .entry-row .entry-details .field:nth-child(1){grid-column:2;grid-row:1}
+ .entry-row .entry-details .field:nth-child(2){grid-column:2;grid-row:2}
+ .entry-row .entry-details .field:nth-child(3){grid-column:1;grid-row:3}
+ .entry-row .entry-details .field:nth-child(4){grid-column:2;grid-row:3}
+ .entry-row .entry-details .field.full{grid-column:2}
+ .entry-row .entry-details .field{min-width:0}
+ .field label{font-size:11px;line-height:1.4;margin-bottom:5px}
+ .field input,.field select{min-height:41px;padding:9px 10px;border-radius:10px;font-size:16px}
+ .field select{padding-right:22px}
+ .note{font-size:10px}
+ .member-grid{grid-template-columns:minmax(0,1fr);gap:11px}
+ .member-box{padding:15px;border-radius:15px;background:#fbfbfa;border-color:#e9eae8}
+ .member-box h3{font-size:11px;letter-spacing:.08em;margin:0 0 12px;color:#59646b}
+ .member-profile{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px 13px;align-items:start}
+ .member-profile .member-photo{grid-column:1;grid-row:1/span 2;height:131px;border-radius:11px}
+ .member-profile .member-fields{display:contents}
+ .member-profile .member-fields>div:nth-child(1){grid-column:2;grid-row:1}
+ .member-profile .member-fields>div:nth-child(2){grid-column:2;grid-row:2}
+ .member-profile .member-fields>div:nth-child(3){grid-column:1;grid-row:3}
+ .member-profile .member-fields>div:nth-child(4){grid-column:2;grid-row:3}
+ .member-fields input{min-height:40px;padding:9px 10px;border-radius:9px;font-size:16px}
+ .member-box .paste-image-btn{padding:8px;margin-top:9px;font-size:11px}
+ .member-box .paste-hint{display:none}
+ .track-row{border-radius:13px}
+ .track-top{padding:11px 13px;gap:8px}
+ .track-number{font-size:11px}
+ .track-top .title-toggle{font-size:10px;padding:7px 9px;min-height:33px}
+ .track-fields{grid-template-columns:minmax(0,1fr);gap:12px;padding:13px}
+ .track-fields .youtube{grid-column:auto}
+ .track-fields input{font-size:16px}
+ .sticky-actions{position:static;padding:17px;margin:2px 0 0;border-radius:18px}
+ .sticky-actions h3{font-size:15px}
+ .sticky-actions p{margin-bottom:12px;line-height:1.55;font-size:11px}
+ .sticky-actions .primary-btn,.sticky-actions .secondary-btn{min-height:45px;border-radius:12px;font-size:13px}
+ .sticky-actions .hint-box{display:none}
+ .detail-banner{height:auto;aspect-ratio:16/11}
+ .detail-info{padding:20px 18px}
+ .detail-title{font-size:clamp(25px,7vw,33px);line-height:1.18}
+ .detail-hero,.data-card,.detail-secondary{border-radius:19px}
+ .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+ .meta-item strong{font-size:13px}
+ .data-card{padding:20px 17px}
+ .data-card h3{font-size:15px}
+ .member-table{grid-template-columns:minmax(0,1fr)}
+ .member-pill{padding:11px;border-radius:13px;gap:12px}
+ .member-display-image{width:61px;height:70px;flex-basis:61px;border-radius:10px}
+ .member-display-text strong{font-size:13px}
+ .member-display-text small{font-size:11px;line-height:1.5}
+ .detail-secondary{padding:20px 18px}
+ .detail-secondary>img{max-height:360px;object-fit:contain}
+ .detail-secondary .track-display{grid-template-columns:25px minmax(0,1fr);padding:12px 0}
+ .detail-secondary .track-display a{white-space:normal;font-size:10px}
+ .login-shell{margin:16px auto 0}
+ .login-card{padding:24px 20px;border-radius:19px}
+ .login-card h2{font-size:22px}
+ .login-card input{font-size:16px}
+ .image-lightbox{padding:10px;max-width:calc(100vw - 18px)}
+ .image-lightbox>img{max-width:calc(100vw - 38px)}
+ .footer{padding-top:18px;padding-bottom:15px;gap:3px;font-size:10px;line-height:1.55}
+ .notice{font-size:11px;line-height:1.6}
+ .empty{min-height:147px;padding:18px}
+ .toast{bottom:calc(76px + env(safe-area-inset-bottom))}
+}
+@media(max-width:355px){
+ .logo-word{font-size:15px}
+ .topbar-inner .header-actions{gap:3px}
+ .header-actions .mini-btn{padding:7px 8px;font-size:9px}
+ .home-hero{padding:22px 18px}
+ .home-hero .main-title{font-size:37px}
+ .entry-row{grid-template-columns:minmax(93px,36%) minmax(0,1fr);column-gap:10px}
+ .member-profile{grid-template-columns:82px minmax(0,1fr);gap:9px}
+ .member-profile .member-photo{height:116px}
+ .record-info{padding:10px}
+ .record-info h3{font-size:13px}
+ .record-date{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){.category,.record-cover img{transition:none}}
 </style>
 </head>
 <body>
@@ -335,7 +518,7 @@ function beginNew(type){if(!state.isAdmin)return goLogin();state.category=type;s
 function beginEdit(id){if(!state.isAdmin)return goLogin();const old=state.all.find(r=>r.id===id);if(!old)return toast('자료를 찾지 못했습니다.');state.category=old.type;state.view='form';state.recordId=id;state.draft={...old,members:(old.members||[]).map(m=>({...m})),tracks:(old.tracks||[]).map(t=>({...t}))};if(!state.draft.tracks.length)state.draft.tracks=[defaultTrack(0)];if(old.type!=='album')syncMembers(state.draft.memberCount||2);show();}
 function showDetail(id){const rec=state.all.find(r=>r.id===id);if(!rec)return;state.category=rec.type;state.view='detail';state.recordId=id;show();}
 function categoryTile(type,num){const m=meta[type];return `<button class="category ${type}" data-action="category" data-type="${type}"><span class="cat-kicker">COLLECTION / 0${num}</span><span class="cat-title">${m.title.replace('NEW ','NEW<br>')}</span><span class="cat-meta"><span class="cat-arrow">↗</span>${count(type)}개의 기록</span><span class="graphic" aria-hidden="true"></span></button>`;}
-function renderHome(){app.innerHTML=`<div class="eyebrow">YOUR PERSONAL K-POP DATABASE / VOL. 001</div><h1 class="main-title">Archive the<br><em>Next Era.</em></h1><p class="intro">새롭게 데뷔하는 아이돌 그룹부터 발매 앨범까지.<br>필요한 정보를 차곡차곡 기록하고, 언제든 다시 꺼내 보는 나만의 K-POP 아카이브.</p><div class="section-head"><div><h2>Explore Collections</h2><p>카테고리를 선택해 새로운 기록을 추가하세요.</p></div><span class="smallcaps">SELECT A CATEGORY ↘</span></div><div class="category-grid">${categoryTile('girl',1)}${categoryTile('boy',2)}${categoryTile('album',3)}</div><div class="stats-bar"><div class="stat"><span>GIRL GROUP</span><strong>${count('girl')}</strong></div><div class="stat"><span>BOY GROUP</span><strong>${count('boy')}</strong></div><div class="stat"><span>ALBUM</span><strong>${count('album')}</strong></div></div><div class="section-head"><div><h2>Recently Archived</h2><p>가장 최근에 추가하거나 수정한 자료</p></div></div><div class="list-grid">${state.all.length?state.all.slice(0,6).map(recordCard).join(''):`<div class="empty"><strong>아직 보관된 자료가 없습니다.</strong><span>위의 카테고리를 눌러 첫 번째 기록을 만들어 보세요.</span></div>`}</div><p class="notice">* 클라우드 동기화 아카이브입니다. 자료는 모든 기기에서 동일하게 보이며, 등록·수정·삭제는 관리자 로그인 후 가능합니다.</p>`;}
+function renderHome(){app.innerHTML=`<section class="home-hero"><div class="eyebrow">YOUR PERSONAL K-POP DATABASE / VOL. 001</div><h1 class="main-title">Archive the<br><em>Next Era.</em></h1><p class="intro">새롭게 데뷔하는 아이돌 그룹부터 발매 앨범까지.<br>필요한 정보를 차곡차곡 기록하고, 언제든 다시 꺼내 보는 나만의 K-POP 아카이브.</p></section><div class="section-head"><div><h2>Explore Collections</h2><p>카테고리를 선택해 새로운 기록을 추가하세요.</p></div><span class="smallcaps">SELECT A CATEGORY ↘</span></div><div class="category-grid">${categoryTile('girl',1)}${categoryTile('boy',2)}${categoryTile('album',3)}</div><div class="stats-bar"><div class="stat"><span>GIRL GROUP</span><strong>${count('girl')}</strong></div><div class="stat"><span>BOY GROUP</span><strong>${count('boy')}</strong></div><div class="stat"><span>ALBUM</span><strong>${count('album')}</strong></div></div><div class="section-head"><div><h2>Recently Archived</h2><p>가장 최근에 추가하거나 수정한 자료</p></div></div><div class="list-grid">${state.all.length?state.all.slice(0,6).map(recordCard).join(''):`<div class="empty"><strong>아직 보관된 자료가 없습니다.</strong><span>위의 카테고리를 눌러 첫 번째 기록을 만들어 보세요.</span></div>`}</div><p class="notice">* 클라우드 동기화 아카이브입니다. 자료는 모든 기기에서 동일하게 보이며, 등록·수정·삭제는 관리자 로그인 후 가능합니다.</p>`;}
 function cardTitle(r){return r.type==='album'?r.albumName:r.groupName;}
 function recordCard(r){const photo=r.type==='album'?r.albumCover:(r.groupPhoto||r.albumCover);const secondary=r.type==='album'?r.groupName:(r.company||r.debutAlbumName);return `<article class="record-card"><button class="record-open" data-action="detail" data-id="${esc(r.id)}"><div class="record-cover">${iconCover(photo,'IDOL',false)}<span class="record-tag">${meta[r.type].tag}</span></div><div class="record-info"><h3>${esc(cardTitle(r)||'이름 없는 기록')}</h3><p>${esc(secondary||'추가 정보 없음')} · ${esc(r.albumType||'앨범 미선택')}</p></div></button><div class="record-bottom"><span class="record-date">${prettyDate(r.debutDate||r.releaseDate||r.createdAt)}</span>${state.isAdmin?`<div><button class="text-button" data-action="edit" data-id="${esc(r.id)}">수정</button><button class="text-button danger" data-action="delete" data-id="${esc(r.id)}">삭제</button></div>`:""}</div></article>`;}
 function filteredRecords(){const q=state.search.trim().toLocaleLowerCase();return state.all.filter(r=>r.type===state.category).filter(r=>!q||[r.groupName,r.company,r.albumName,r.debutAlbumName,(r.tracks||[]).map(t=>t.name).join(' ')].some(x=>String(x||'').toLocaleLowerCase().includes(q)));}
