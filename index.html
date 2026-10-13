@@ -185,7 +185,7 @@ html,body{max-width:100%}
 @media(max-width:650px){
  :root{--mobile-space:17px;--mobile-radius:19px}
  html{scroll-padding-bottom:90px}
- body{background:#f8f8f7;-webkit-text-size-adjust:100%;padding-bottom:env(safe-area-inset-bottom)}
+ body{background:#f8f8f7;-webkit-text-size-adjust:100%;padding-bottom:calc(78px + env(safe-area-inset-bottom))}
  .shell{width:100%;padding-left:var(--mobile-space);padding-right:var(--mobile-space)}
  .topbar{position:relative;z-index:20;background:#fff;border-bottom:1px solid #f0f0ee;backdrop-filter:none}
  .topbar-inner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:7px;min-height:68px;height:auto;padding-top:13px;padding-bottom:13px}
