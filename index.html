@@ -428,6 +428,18 @@ html,body{max-width:100%}
 .metric-date{font-size:10px;color:#8f9698;margin:12px 0 0}
 @media(max-width:650px){.album-metric{padding:12px}.album-metric strong{font-size:15px}.metrics-inputs{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.metrics-inputs .field{grid-column:auto}.metric-refresh .secondary-btn{width:100%;white-space:normal}}
 @media(max-width:360px){.metrics-inputs{grid-template-columns:minmax(0,1fr)}}
+
+/* Rich memo editor: keyboard and touch-friendly bold styling, stored as safe text. */
+.memo-field .memo-field-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.memo-field .memo-field-top label{margin:0}
+.memo-bold-btn{flex:0 0 auto;display:grid;place-items:center;min-width:33px;min-height:32px;padding:4px 10px;border:1px solid #dedfe1;border-radius:8px;background:#f7f8f8;color:#3a4046;font-family:Georgia,serif;font-size:15px}
+.memo-bold-btn:hover,.memo-bold-btn:focus-visible{border-color:#9facde;background:#eff1fc}
+.memo-rich-editor{display:block;min-width:0;width:100%;min-height:136px;padding:14px 15px;border:1px solid #e1e5e3;border-radius:12px;background:#fdfdfc;color:#313a3c;font:inherit;font-size:13px;line-height:1.75;outline:none;overflow-wrap:anywhere;white-space:pre-wrap;word-break:break-word;cursor:text}
+.memo-rich-editor:focus{border-color:#9facde;background:#fff;box-shadow:0 0 0 3px #cbd6fa56}
+.memo-rich-editor:empty::before{content:attr(data-placeholder);color:#aab1b0;pointer-events:none}
+.memo-rich-editor strong,.memo-rich-editor b,.memo-body strong{font-weight:800}
+.memo-format-hint{font-size:10px;color:#919a9b;margin:7px 0 0;line-height:1.5}
+@media(max-width:650px){.memo-rich-editor{min-height:141px;font-size:16px;line-height:1.65;padding:12px 13px;border-radius:11px}.memo-bold-btn{min-width:38px;min-height:36px}.memo-format-hint{font-size:10px}}
 </style>
 </head>
 <body>
@@ -593,8 +605,30 @@ function renderCategory(){const m=meta[state.category],type=state.category;app.i
 function textField(label,key,placeholder='',options={}){return `<div class="field ${options.full?'full':''}"><label for="field-${key}">${label}${options.optional?'<span class="optional">(선택)</span>':' <span class="required">*</span>'}</label><input id="field-${key}" data-field="${key}" type="${options.date?'date':options.url?'url':'text'}" placeholder="${esc(placeholder)}" value="${esc(state.draft[key]||'')}" ${options.required?'required':''}></div>`;}
 function memberSelector(){const n=state.draft.memberCount||2;return `<div class="field"><label for="member-count">멤버 수 <span class="required">*</span></label><select id="member-count" data-action="member-count">${Array.from({length:11},(_,i)=>i+2).map(x=>`<option value="${x}" ${n===x?'selected':''}>${x}명</option>`).join('')}<option value="more" ${n>=13?'selected':''}>12+명 (직접 입력)</option></select></div>${n>=13?`<div class="field"><label for="member-extra">정확한 인원</label><input id="member-extra" data-action="member-extra" type="number" min="13" max="99" value="${n}"></div>`:''}`;}
 function selectAlbumType(){return `<div class="field"><label for="album-type">앨범 종류 <span class="required">*</span></label><select id="album-type" data-field="albumType">${types.map(t=>`<option ${state.draft.albumType===t?'selected':''}>${t}</option>`).join('')}</select></div>`;}
+// Bold memo text is stored as plain Markdown (**text**), not user-supplied HTML.
+function memoMarkup(value){
+ return esc(String(value||'')).replace(/\*\*([\s\S]+?)\*\*/g,'<strong>$1</strong>');
+}
+function memoNodeText(node){
+ if(node.nodeType===3)return node.nodeValue||'';
+ if(node.nodeType!==1)return '';
+ const name=node.nodeName.toUpperCase();
+ if(name==='BR')return '\n';
+ let inner='';
+ Array.from(node.childNodes).forEach((child,index)=>{
+  const block=child.nodeType===1&&/^(DIV|P|LI)$/.test(child.nodeName);
+  if(block&&index>0&&inner&&!inner.endsWith('\n'))inner+='\n';
+  inner+=memoNodeText(child);
+ });
+ const bold=name==='B'||name==='STRONG'||(name==='SPAN'&&/^(bold|[6-9]00)$/i.test(node.style.fontWeight||''));
+ if(bold&&inner)return '**'+inner+'**';
+ return inner;
+}
+function memoPlainText(editor){
+ return memoNodeText(editor).replace(/\r\n/g,'\n').replace(/\u00a0/g,' ');
+}
 function memoField(label,key,placeholder){
- return `<div class="field memo-field"><label for="field-${key}">${label} <span class="optional">(선택)</span></label><textarea id="field-${key}" data-field="${key}" rows="5" placeholder="${esc(placeholder)}">${esc(state.draft[key]||'')}</textarea></div>`;
+ return `<div class="field memo-field"><div class="memo-field-top"><label id="label-${key}" for="field-${key}">${label} <span class="optional">(선택)</span></label><button type="button" class="memo-bold-btn" data-action="memo-bold" data-memo-key="${key}" title="선택한 글자를 굵게 (Ctrl+B / ⌘B)" aria-label="${esc(label)} 선택 글자 굵게"><strong>B</strong></button></div><div id="field-${key}" class="memo-rich-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="label-${key}" data-field="${key}" data-placeholder="${esc(placeholder)}" spellcheck="true">${memoMarkup(state.draft[key]||'')}</div><p class="memo-format-hint">글자를 드래그한 뒤 Ctrl+B (Mac: ⌘B) 또는 B 버튼을 누르세요.</p></div>`;
 }
 function imageField(label,key){
  const u=imgURL(state.draft[key]);
@@ -693,7 +727,7 @@ function syncEditorInput(target){
  if(!state.draft||!target)return;
  if(target.hasAttribute('data-field')){
   const field=target.dataset.field;
-  if(Object.prototype.hasOwnProperty.call(state.draft,field))state.draft[field]=target.value;
+  if(Object.prototype.hasOwnProperty.call(state.draft,field))state.draft[field]=target.classList?.contains('memo-rich-editor')?memoPlainText(target):target.value;
  }
  if(target.hasAttribute('data-member-index')){
   const index=Number(target.dataset.memberIndex),member=state.draft.members?.[index],prop=target.dataset.memberProp;
@@ -720,7 +754,7 @@ state.saving=true;const btn=document.getElementById('save-button');if(btn){btn.d
 try{d.updatedAt=new Date().toISOString();if(d.type!=='album')syncMembers(d.memberCount);if(!d.tracks.some(x=>x.title)&&d.tracks.length)d.tracks[0].title=true;await put(d);await reload();toast('클라우드에 저장했습니다.');showDetail(d.id);}catch(err){console.error(err);toast('저장 실패: '+(err.message||'권한과 연결을 확인하세요.'));}finally{state.saving=false;if(document.getElementById('save-button'))document.getElementById('save-button').disabled=false;}}
 function metaItem(label,value){return `<div class="meta-item"><span>${label}</span><strong>${esc(value||'미입력')}</strong></div>`;}
 function urlForDisplay(value){if(!validVideoLink(value))return '';try{const u=new URL(value);return u.href;}catch{return '';}}
-function renderDetail(){const r=state.all.find(v=>v.id===state.recordId);if(!r){goCategory(state.category);return;}const isAlbum=r.type==='album';const primaryImage=isAlbum?r.albumCover:(r.groupPhoto||r.albumCover);const albumName=isAlbum?r.albumName:r.debutAlbumName;app.innerHTML=`<button class="back-btn" data-action="category" data-type="${r.type}">← ${meta[r.type].title} 목록</button><div class="page-top"><div><div class="eyebrow">ARCHIVED RECORD / ${meta[r.type].title}</div><h1 class="page-heading">Archive <span class="accent">Details.</span></h1></div>${state.isAdmin?`<button class="primary-btn" data-action="edit" data-id="${esc(r.id)}">✎ 기록 수정</button>`:""}</div><div class="detail-shell"><div><article class="detail-hero"><div class="detail-banner">${iconCover(primaryImage,'IDOL')}</div><div class="detail-info"><div class="eyebrow">${meta[r.type].title}</div><h2 class="detail-title">${esc(cardTitle(r))}</h2><div class="detail-sub-row"><div class="detail-sub">${esc(isAlbum?r.groupName:(r.company||'소속사 미입력'))}</div>${!isAlbum?officialXBadge(r.officialX):''}</div><div class="meta-grid">${isAlbum?`${metaItem('아티스트 / 그룹',r.groupName)}${metaItem('발매일',r.releaseDate?prettyDate(r.releaseDate):'미입력')}`:`${metaItem('소속사',r.company)}${metaItem('데뷔일',r.debutDate?prettyDate(r.debutDate):'미입력')}${metaItem('멤버 수',`${r.memberCount||0}명`)}${metaItem('데뷔 앨범명',albumName)}`}${metaItem('앨범 종류',r.albumType)}${metaItem('수록곡 수',`${(r.tracks||[]).length}곡`)}</div></div></article>${metricDisplay(r)}${isAlbum?'':`<section class="data-card"><h3>멤버 정보 · ${(r.members||[]).length}명</h3><div class="member-table">${(r.members||[]).map((m,i)=>`<div class="member-pill"><div class="member-display-image">${imgURL(m.photo)?`<img class="zoomable-image" role="button" tabindex="0" title="클릭하여 원본 이미지 보기" aria-label="${esc(m.name||'멤버')} 사진 크게 보기" src="${esc(imgURL(m.photo))}" alt="${esc(m.name||'멤버')} 사진">`:'<span>NO IMAGE</span>'}</div><div class="member-display-text"><strong>${String(i+1).padStart(2,'0')} · ${esc(m.name||'이름 미입력')}</strong><small>${esc([m.birthYear,m.nationality,m.position].filter(Boolean).join(' · ')||'추가 정보 없음')}</small></div></div>`).join('')}</div></section>`}${(r.issueNotes||r.personalNotes||state.isAdmin)?`<section class="data-card memo-detail-card"><div class="memo-detail-heading"><h3>ISSUES &amp; NOTES</h3><span>ARCHIVE OBSERVATIONS</span></div>${r.issueNotes?`<div class="memo-entry"><div class="memo-label issue">주요 이슈</div><p class="memo-body">${esc(r.issueNotes)}</p></div>`:''}${r.personalNotes?`<div class="memo-entry"><div class="memo-label thoughts">나의 생각 · 분석 메모</div><p class="memo-body">${esc(r.personalNotes)}</p></div>`:''}${!r.issueNotes&&!r.personalNotes?'<p class="memo-empty">아직 작성된 메모가 없습니다. 기록 수정에서 추가할 수 있습니다.</p>':''}</section>`:''}</div><aside class="detail-secondary"><div class="eyebrow">ALBUM ARTWORK</div>${iconCover(r.albumCover,'ALBUM')}<h3>${esc(albumName||'앨범명 미입력')}</h3><p>${esc(r.albumType||'앨범 종류 미입력')}</p><div class="album-tracklist"><h4>TRACKLIST <span>· ${(r.tracks||[]).length} tracks</span></h4>${(r.tracks||[]).map((t,i)=>`<div class="track-display"><span class="num">${String(i+1).padStart(2,'0')}</span><div class="track-info"><strong>${esc(t.name||'곡명 미입력')}${t.title?'<span class="pill">TITLE</span>':''}</strong><small>${esc(t.genre||'장르 미입력')}</small></div>${urlForDisplay(t.youtube||'')?`<a href="${esc(urlForDisplay(t.youtube))}" target="_blank" rel="noopener noreferrer">YouTube ↗</a>`:''}</div>`).join('')}</div>${state.isAdmin?`<button class="secondary-btn" data-action="edit" data-id="${esc(r.id)}">이 기록 수정하기</button><button class="secondary-btn" data-action="delete" data-id="${esc(r.id)}" style="color:#cf6776">기록 삭제하기</button>`:""}</aside></div>`;}
+function renderDetail(){const r=state.all.find(v=>v.id===state.recordId);if(!r){goCategory(state.category);return;}const isAlbum=r.type==='album';const primaryImage=isAlbum?r.albumCover:(r.groupPhoto||r.albumCover);const albumName=isAlbum?r.albumName:r.debutAlbumName;app.innerHTML=`<button class="back-btn" data-action="category" data-type="${r.type}">← ${meta[r.type].title} 목록</button><div class="page-top"><div><div class="eyebrow">ARCHIVED RECORD / ${meta[r.type].title}</div><h1 class="page-heading">Archive <span class="accent">Details.</span></h1></div>${state.isAdmin?`<button class="primary-btn" data-action="edit" data-id="${esc(r.id)}">✎ 기록 수정</button>`:""}</div><div class="detail-shell"><div><article class="detail-hero"><div class="detail-banner">${iconCover(primaryImage,'IDOL')}</div><div class="detail-info"><div class="eyebrow">${meta[r.type].title}</div><h2 class="detail-title">${esc(cardTitle(r))}</h2><div class="detail-sub-row"><div class="detail-sub">${esc(isAlbum?r.groupName:(r.company||'소속사 미입력'))}</div>${!isAlbum?officialXBadge(r.officialX):''}</div><div class="meta-grid">${isAlbum?`${metaItem('아티스트 / 그룹',r.groupName)}${metaItem('발매일',r.releaseDate?prettyDate(r.releaseDate):'미입력')}`:`${metaItem('소속사',r.company)}${metaItem('데뷔일',r.debutDate?prettyDate(r.debutDate):'미입력')}${metaItem('멤버 수',`${r.memberCount||0}명`)}${metaItem('데뷔 앨범명',albumName)}`}${metaItem('앨범 종류',r.albumType)}${metaItem('수록곡 수',`${(r.tracks||[]).length}곡`)}</div></div></article>${metricDisplay(r)}${isAlbum?'':`<section class="data-card"><h3>멤버 정보 · ${(r.members||[]).length}명</h3><div class="member-table">${(r.members||[]).map((m,i)=>`<div class="member-pill"><div class="member-display-image">${imgURL(m.photo)?`<img class="zoomable-image" role="button" tabindex="0" title="클릭하여 원본 이미지 보기" aria-label="${esc(m.name||'멤버')} 사진 크게 보기" src="${esc(imgURL(m.photo))}" alt="${esc(m.name||'멤버')} 사진">`:'<span>NO IMAGE</span>'}</div><div class="member-display-text"><strong>${String(i+1).padStart(2,'0')} · ${esc(m.name||'이름 미입력')}</strong><small>${esc([m.birthYear,m.nationality,m.position].filter(Boolean).join(' · ')||'추가 정보 없음')}</small></div></div>`).join('')}</div></section>`}${(r.issueNotes||r.personalNotes||state.isAdmin)?`<section class="data-card memo-detail-card"><div class="memo-detail-heading"><h3>ISSUES &amp; NOTES</h3><span>ARCHIVE OBSERVATIONS</span></div>${r.issueNotes?`<div class="memo-entry"><div class="memo-label issue">주요 이슈</div><p class="memo-body">${memoMarkup(r.issueNotes)}</p></div>`:''}${r.personalNotes?`<div class="memo-entry"><div class="memo-label thoughts">나의 생각 · 분석 메모</div><p class="memo-body">${memoMarkup(r.personalNotes)}</p></div>`:''}${!r.issueNotes&&!r.personalNotes?'<p class="memo-empty">아직 작성된 메모가 없습니다. 기록 수정에서 추가할 수 있습니다.</p>':''}</section>`:''}</div><aside class="detail-secondary"><div class="eyebrow">ALBUM ARTWORK</div>${iconCover(r.albumCover,'ALBUM')}<h3>${esc(albumName||'앨범명 미입력')}</h3><p>${esc(r.albumType||'앨범 종류 미입력')}</p><div class="album-tracklist"><h4>TRACKLIST <span>· ${(r.tracks||[]).length} tracks</span></h4>${(r.tracks||[]).map((t,i)=>`<div class="track-display"><span class="num">${String(i+1).padStart(2,'0')}</span><div class="track-info"><strong>${esc(t.name||'곡명 미입력')}${t.title?'<span class="pill">TITLE</span>':''}</strong><small>${esc(t.genre||'장르 미입력')}</small></div>${urlForDisplay(t.youtube||'')?`<a href="${esc(urlForDisplay(t.youtube))}" target="_blank" rel="noopener noreferrer">YouTube ↗</a>`:''}</div>`).join('')}</div>${state.isAdmin?`<button class="secondary-btn" data-action="edit" data-id="${esc(r.id)}">이 기록 수정하기</button><button class="secondary-btn" data-action="delete" data-id="${esc(r.id)}" style="color:#cf6776">기록 삭제하기</button>`:""}</aside></div>`;}
 async function deleteRecord(id){if(!state.isAdmin)return goLogin();const r=state.all.find(x=>x.id===id);if(!r)return;if(!confirm(`‘${cardTitle(r)||'기록'}’ 자료를 삭제할까요?\n삭제된 기록은 복구할 수 없습니다.`))return;try{await remove(id);await reload();toast('기록을 삭제했습니다.');goCategory(r.type);}catch(e){console.error(e);toast('삭제하지 못했습니다.');}}
 function blobToDataURL(blob){return new Promise((resolve,reject)=>{if(!blob)return resolve(null);const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);});}
 function dataURLToBlob(url){if(!url||typeof url!=='string')return null;const m=/^data:([^;,]+)?(;base64)?,(.*)$/s.exec(url);if(!m)throw Error('이미지 데이터 형식이 잘못되었습니다.');if(!m[2])return new Blob([decodeURIComponent(m[3])],{type:m[1]||'application/octet-stream'});const b=atob(m[3]);const bytes=new Uint8Array(b.length);for(let i=0;i<b.length;i++)bytes[i]=b.charCodeAt(i);return new Blob([bytes],{type:m[1]||'application/octet-stream'});}
@@ -842,6 +876,46 @@ document.addEventListener('focusin',event=>{
  if(target)activatePasteTarget(target);
 });
 document.addEventListener('paste',event=>{
+ const editor=event.target.closest?.('.memo-rich-editor');
+ if(!editor||state.view!=='form')return;
+ event.preventDefault();
+ const plain=event.clipboardData?.getData('text/plain')||'';
+ document.execCommand('insertText',false,plain);
+ syncEditorInput(editor);
+},true);
+// Preserve selected memo text while the mobile/desktop B button receives a click.
+let memoRange=null;
+document.addEventListener('selectionchange',()=>{
+ const selection=window.getSelection();
+ if(!selection?.rangeCount)return;
+ const anchor=selection.anchorNode?.nodeType===1?selection.anchorNode:selection.anchorNode?.parentElement;
+ const editor=anchor?.closest?.('.memo-rich-editor');
+ if(editor&&editor.contains(selection.getRangeAt(0).commonAncestorContainer))
+  memoRange={field:editor.dataset.field,range:selection.getRangeAt(0).cloneRange()};
+});
+document.addEventListener('mousedown',event=>{
+ if(event.target.closest?.('[data-action="memo-bold"]'))event.preventDefault();
+});
+function toggleMemoBold(button){
+ const editor=document.getElementById('field-'+button.dataset.memoKey);
+ if(!editor||!editor.classList.contains('memo-rich-editor'))return;
+ editor.focus();
+ if(memoRange?.field===button.dataset.memoKey&&editor.contains(memoRange.range.commonAncestorContainer)){
+  const selection=window.getSelection();selection.removeAllRanges();selection.addRange(memoRange.range);
+ }
+ document.execCommand('styleWithCSS',false,'false');
+ document.execCommand('bold',false,null);
+ syncEditorInput(editor);
+}
+document.addEventListener('keydown',event=>{
+ const editor=event.target.closest?.('.memo-rich-editor');
+ if(!editor||!((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='b')||event.isComposing)return;
+ event.preventDefault();
+ document.execCommand('styleWithCSS',false,'false');
+ document.execCommand('bold',false,null);
+ syncEditorInput(editor);
+});
+document.addEventListener('paste',event=>{
  if(state.view!=='form'||!state.isAdmin||!state.draft)return;
  const image=Array.from(event.clipboardData?.items||[]).find(item=>item.kind==='file'&&item.type.startsWith('image/'))?.getAsFile()||
               Array.from(event.clipboardData?.files||[]).find(file=>file.type.startsWith('image/'));
@@ -880,7 +954,7 @@ document.addEventListener('keydown',event=>{
  event.preventDefault();event.stopPropagation();
  openImageLightbox(img);
 },true);
-document.addEventListener('click',async e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const action=btn.dataset.action;if(state.view==='form'&&['add-track','remove-track','mark-title'].includes(action))syncEditorFields();switch(action){case'home':goHome();break;case'category':goCategory(btn.dataset.type);break;case'new':beginNew(btn.dataset.type);break;case'detail':showDetail(btn.dataset.id);break;case'edit':beginEdit(btn.dataset.id);break;case'delete':await deleteRecord(btn.dataset.id);break;case'add-track':if(state.draft.tracks.length>=100){toast('트랙은 최대 100곡까지 추가할 수 있습니다.');break;}state.draft.tracks.push(defaultTrack(1));renderTracks();break;case'remove-track':if(state.draft.tracks.length>1){const removed=state.draft.tracks.pop();if(removed.title)state.draft.tracks[0].title=true;renderTracks();}else toast('트랙은 최소 1곡이 필요합니다.');break;case'mark-title':{const i=Number(btn.dataset.index);state.draft.tracks.forEach((t,j)=>t.title=i===j);renderTracks();break;}case'paste-image':await pasteImageFromClipboard(btn);break;case'refresh-views':await refreshMVViews();break;case'export':await exportBackup();break;case'import':if(state.isAdmin)document.getElementById('import-file').click();else goLogin();break;case'login':goLogin();break;case'logout':await logout();break;}});
+document.addEventListener('click',async e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const action=btn.dataset.action;if(state.view==='form'&&['add-track','remove-track','mark-title'].includes(action))syncEditorFields();switch(action){case'home':goHome();break;case'category':goCategory(btn.dataset.type);break;case'new':beginNew(btn.dataset.type);break;case'detail':showDetail(btn.dataset.id);break;case'edit':beginEdit(btn.dataset.id);break;case'delete':await deleteRecord(btn.dataset.id);break;case'add-track':if(state.draft.tracks.length>=100){toast('트랙은 최대 100곡까지 추가할 수 있습니다.');break;}state.draft.tracks.push(defaultTrack(1));renderTracks();break;case'remove-track':if(state.draft.tracks.length>1){const removed=state.draft.tracks.pop();if(removed.title)state.draft.tracks[0].title=true;renderTracks();}else toast('트랙은 최소 1곡이 필요합니다.');break;case'mark-title':{const i=Number(btn.dataset.index);state.draft.tracks.forEach((t,j)=>t.title=i===j);renderTracks();break;}case'memo-bold':toggleMemoBold(btn);break;case'paste-image':await pasteImageFromClipboard(btn);break;case'refresh-views':await refreshMVViews();break;case'export':await exportBackup();break;case'import':if(state.isAdmin)document.getElementById('import-file').click();else goLogin();break;case'login':goLogin();break;case'logout':await logout();break;}});
 document.addEventListener('input',e=>{
  const target=e.target;
  if(target.id==='search-records'){state.search=target.value;renderRecordList();return;}
