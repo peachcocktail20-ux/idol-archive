@@ -440,6 +440,18 @@ html,body{max-width:100%}
 .memo-rich-editor strong,.memo-rich-editor b,.memo-body strong{font-weight:800}
 .memo-format-hint{font-size:10px;color:#919a9b;margin:7px 0 0;line-height:1.5}
 @media(max-width:650px){.memo-rich-editor{min-height:141px;font-size:16px;line-height:1.65;padding:12px 13px;border-radius:11px}.memo-bold-btn{min-width:38px;min-height:36px}.memo-format-hint{font-size:10px}}
+
+/* Group detail readability: clearer member labels, subtler official X badge. */
+.member-display-text strong{font-size:16px;line-height:1.35;font-weight:800;letter-spacing:-.015em}
+.member-display-text small{display:block;margin-top:5px;font-size:14px;line-height:1.5;color:#697477;font-weight:450}
+.official-x-link{width:27px;height:27px;flex-basis:27px;border-radius:7px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.official-x-link svg{width:13px;height:13px}
+@media(max-width:650px){
+ .member-display-text strong{font-size:16px;line-height:1.35}
+ .member-display-text small{font-size:13.5px;line-height:1.55}
+ .official-x-link{width:26px;height:26px;flex-basis:26px;border-radius:7px}
+ .official-x-link svg{width:13px;height:13px}
+}
 </style>
 </head>
 <body>
