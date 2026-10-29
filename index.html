@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="color-scheme" content="light" />
+<meta name="theme-color" content="#303650" />
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 <title>IDOL INDEX | K-POP Archive</title>
@@ -452,6 +453,175 @@ html,body{max-width:100%}
  .official-x-link{width:18px;height:18px;flex:0 0 18px;border-radius:5px}
  .official-x-link svg{width:11px;height:11px;left:50%;top:50%}
 }
+
+/* -------------------------------------------------------------------
+   IDOL INDEX | Unified visual identity v3
+   MAIN #303650 · SECONDARY #8FA5D8 · ACCENT #D98EAC
+   Pastel collection cards are tonal variations of the same palette.
+   ------------------------------------------------------------------- */
+:root{
+ --brand-main:#303650;
+ --brand-secondary:#8FA5D8;
+ --brand-accent:#D98EAC;
+ --brand-blue-ink:#526EA6;
+ --brand-rose-ink:#A74C76;
+ --brand-violet:#8174B0;
+ --bg:#F7F7FB;
+ --card:#FFFFFF;
+ --ink:#303650;
+ --muted:#787F91;
+ --line:#E5E7F0;
+ --pink:#C45F89;
+ --blue:#5978B7;
+ --purple:#8774B0;
+ --dark:#303650;
+ --shadow:0 10px 33px rgba(48,54,80,.055);
+}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink)}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,.memo-rich-editor:focus-visible{
+ outline-color:var(--brand-secondary);
+}
+.topbar{background:rgba(251,251,255,.96);border-bottom:1px solid #DFE3EF;box-shadow:0 2px 12px rgba(48,54,80,.025)}
+.logo-symbol{background:var(--brand-main);color:#fff}
+.logo-word{color:var(--brand-main)}
+.logo-word span{color:var(--brand-rose-ink)}
+.nav-link{color:#79819A}
+.nav-link:hover,.nav-link.active{background:#EAEDF8;color:var(--brand-main)}
+.mini-btn{background:#fff;border-color:#DCE1EE;color:var(--brand-main)}
+.mini-btn:hover{background:#F2F4FB;border-color:var(--brand-secondary)}
+main.shell{color:var(--brand-main)}
+.eyebrow,.smallcaps{color:#8592AD}
+.main-title,.page-heading{color:var(--brand-main)}
+.main-title em,.page-heading .accent{color:var(--brand-rose-ink)}
+.page-heading.boy .accent{color:var(--brand-blue-ink)}
+.page-heading.album .accent{color:var(--brand-violet)}
+.intro,.page-description{color:#737B8E}
+.home-hero{
+ position:relative;isolation:isolate;overflow:hidden;
+ background:linear-gradient(115deg,#303650 0%,#3B4569 61%,#505A82 100%);
+ border:1px solid rgba(111,126,171,.4);
+ border-radius:27px;
+ padding:53px 55px 56px;
+ box-shadow:0 15px 36px rgba(40,47,82,.11);
+}
+.home-hero::before{
+ content:"";position:absolute;z-index:-1;pointer-events:none;
+ width:325px;height:325px;right:-90px;bottom:-230px;border-radius:50%;
+ border:63px solid rgba(143,165,216,.18);
+}
+.home-hero::after{
+ content:"";position:absolute;z-index:-1;pointer-events:none;
+ width:255px;height:255px;right:8%;top:-180px;border-radius:50%;
+ border:47px solid rgba(217,142,172,.16);
+}
+.home-hero .eyebrow{color:#CBD5F2;letter-spacing:.17em}
+.home-hero .main-title{color:#fff}
+.home-hero .main-title em{color:#FFC5DC}
+.home-hero .intro{color:#E3E7F2;max-width:630px}
+.section-head h2{color:var(--brand-main);display:flex;align-items:center;gap:10px}
+.section-head h2::before{content:"";display:inline-block;flex:0 0 4px;width:4px;height:19px;background:var(--brand-accent);border-radius:5px}
+.section-head p{color:var(--muted)}
+.category{border:1px solid rgba(97,95,147,.09);box-shadow:0 8px 22px rgba(48,54,80,.035)}
+.category.girl{background:#FAE7F0;color:#71354F}
+.category.boy{background:#E7EEFA;color:#364A78}
+.category.album{background:#EEE9F8;color:#5A477A}
+.category:hover{box-shadow:0 18px 35px rgba(48,54,80,.10)}
+.category.album .graphic{background:radial-gradient(circle,#fff 0 9%,#C8BAE7 10% 11%,#fff6 11% 14%,#AF9DD4 15% 100%)}
+.stats-bar,.record-card,.section-card,.data-card,.detail-hero,.detail-secondary,.login-card{
+ border-color:var(--line);
+ background:#fff;
+ box-shadow:0 8px 25px rgba(48,54,80,.035);
+}
+.stats-bar{overflow:hidden}
+.stat strong{color:var(--brand-main)}
+.stat:nth-child(1) strong{color:var(--brand-rose-ink)}
+.stat:nth-child(2) strong{color:var(--brand-blue-ink)}
+.stat:nth-child(3) strong{color:var(--brand-violet)}
+.stat span{color:#80869B}
+.record-fallback{background:linear-gradient(125deg,#F8E9F2,#E9ECFA);color:#9D9EB5}
+.record-date{color:#9198A8}
+.record-info h3{color:var(--brand-main)}
+.record-tag.girl{background:#FAE7F0;color:#873F60}
+.record-tag.boy{background:#E7EEFA;color:#425F9D}
+.record-tag.album{background:#EEE9F8;color:#6B5595}
+.primary-btn{background:var(--brand-main);border-color:var(--brand-main);color:#fff}
+.primary-btn:hover{background:#455178;border-color:#455178}
+.secondary-btn{background:#fff;border-color:#DBE0EE;color:var(--brand-main)}
+.secondary-btn:hover{background:#F5F6FC;border-color:var(--brand-secondary)}
+.searchbar{border-color:var(--line);box-shadow:0 4px 14px rgba(48,54,80,.025)}
+.searchbar:focus-within{border-color:var(--brand-secondary);box-shadow:0 0 0 3px rgba(143,165,216,.18)}
+.section-num{background:#ECEEFA;color:#5D6C97}
+.member-box,.member-pill,.album-metric{background:#F7F8FC;border-color:var(--line)}
+.field label{color:#4E5673}
+.field input:focus,.field select:focus,.member-fields input:focus,.track-fields input:focus,.memo-rich-editor:focus{
+ border-color:var(--brand-secondary);box-shadow:0 0 0 3px rgba(143,165,216,.19)
+}
+.upload{background:#FAFAFE;border-color:#DCE0EC}
+.upload:hover,.member-photo:hover{border-color:var(--brand-secondary)}
+.upload.paste-selected,.member-photo.paste-selected{border-color:var(--brand-secondary);box-shadow:0 0 0 3px rgba(143,165,216,.16)}
+.paste-image-btn:hover,.paste-image-btn:focus-visible,.memo-bold-btn:hover,.memo-bold-btn:focus-visible{
+ background:#F1F3FC;border-color:var(--brand-secondary)
+}
+.memo-label.issue{background:#FAE7F0;color:var(--brand-rose-ink)}
+.memo-label.thoughts{background:#E9EDF9;color:var(--brand-blue-ink)}
+.album-metric strong,.data-card h3{color:var(--brand-main)}
+.site-footer-band{
+ background:var(--brand-main);
+ border-top:3px solid var(--brand-secondary);
+}
+.site-footer-band .footer{
+ border:0;
+ color:#D6DDF0;
+ padding-top:27px;
+ padding-bottom:27px;
+ min-height:90px;
+ align-items:center;
+}
+.site-footer-band .footer span:first-child{color:#F8F9FF;font-weight:750;letter-spacing:.025em}
+.site-footer-band .footer span:last-child{color:#C5CDE5}
+@media(max-width:650px){
+ body{background:var(--bg)}
+ .topbar{background:#FBFBFF;border-bottom-color:#E3E5F0}
+ .header-actions .mini-btn{background:#F2F4FC;border-color:#E3E7F3;color:var(--brand-main)}
+ .topbar-inner .main-nav{
+  background:rgba(251,251,255,.98);
+  border-top-color:#E0E4F0;
+  box-shadow:0 -9px 26px rgba(48,54,80,.075)
+ }
+ .main-nav .nav-link{color:#868EA5}
+ .main-nav .nav-link:before{border-color:#A8B2CB}
+ .main-nav [data-nav="girl"]:before{border-color:#D98EAC;background:#FBE5EE}
+ .main-nav [data-nav="boy"]:before{border-color:#8FA5D8;background:#E6EDFA}
+ .main-nav [data-nav="album"]:before{border-color:#A99BCF;background:#EEE9F8}
+ .main-nav .nav-link.active{background:#E9EDF9;color:var(--brand-main)}
+ .main-nav .nav-link.active:before{box-shadow:0 0 0 3px #fff}
+ .home-hero{
+  padding:27px 23px 29px;
+  border-radius:23px;
+  border-color:#58648B;
+  background:linear-gradient(125deg,#303650 0%,#3E486E 70%,#525980 100%);
+  box-shadow:0 11px 25px rgba(48,54,80,.105)
+ }
+ .home-hero::before{width:165px;height:165px;right:-85px;bottom:-100px;border-width:31px}
+ .home-hero::after{width:135px;height:135px;right:1%;top:-105px;border-width:27px}
+ .home-hero .eyebrow{color:#CCD5EF}
+ .home-hero .main-title{color:#fff}
+ .home-hero .main-title em{color:#FFC5DC}
+ .home-hero .intro{color:#E3E7F2}
+ .category.girl{background:#FAE7F0}
+ .category.boy{background:#E7EEFA}
+ .category.album{background:#EEE9F8}
+ .category,.category.album{border-color:rgba(125,133,176,.12);box-shadow:0 6px 17px rgba(48,54,80,.04)}
+ .stat:not(:last-child){border-right-color:var(--line)}
+ .record-card,.section-card{border-color:var(--line)}
+ .site-footer-band .footer{
+  padding:21px var(--mobile-space) 23px;
+  min-height:79px;
+  gap:6px;
+ }
+}
+
 </style>
 </head>
 <body>
@@ -462,7 +632,7 @@ html,body{max-width:100%}
 </div></header>
 <input id="import-file" type="file" accept="application/json,.json" aria-label="백업 파일 불러오기" />
 <main class="shell" id="app" aria-live="polite"></main>
-<footer class="shell footer"><span>IDOL INDEX © 2026 · Online K-POP Archive</span><span>기록과 사진은 Supabase 클라우드에 저장됩니다.</span></footer>
+<div class="site-footer-band"><footer class="shell footer"><span>IDOL INDEX © 2026 · Online K-POP Archive</span><span>기록과 사진은 Supabase 클라우드에 저장됩니다.</span></footer></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <dialog id="image-lightbox" class="image-lightbox" aria-label="원본 이미지 보기">
  <div class="lightbox-toolbar">
