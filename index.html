@@ -591,6 +591,31 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,.m
  .site-footer-band .footer{padding:20px var(--mobile-space) 22px;min-height:auto;gap:5px}
 }
 
+
+/* Home: archive-first layout. No marketing hero, shared UI typography and palette. */
+.home-index-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin:0 0 21px}
+.home-index-title{font-family:var(--font-editorial);font-size:clamp(31px,3.7vw,43px);font-weight:500;letter-spacing:-.045em;line-height:1.2;color:var(--brand-main);margin:0}
+.home-index-head .smallcaps,.home-overview-head .smallcaps{font-family:var(--font-ui);font-size:10px;letter-spacing:.12em;color:#818BA2}
+.home-index .category{height:212px;padding:24px 26px}
+.home-overview-head{margin:30px 0 12px}
+.home-overview .stats-bar{margin-top:0}
+.home-recent-head{margin:39px 0 18px}
+.home-overview-head h2,.home-recent-head h2{font-family:var(--font-ui);color:var(--brand-main);font-size:19px;font-weight:750}
+.home-index .cat-title,.home-index .cat-kicker,.home-index .cat-meta,.home-overview .stat span,.home-overview .stat strong{font-family:var(--font-ui)}
+.home-recent .record-card{border-color:var(--line)}
+@media(max-width:650px){
+ .home-index-head{align-items:baseline;gap:8px;margin-bottom:15px}
+ .home-index-title{font-size:clamp(27px,8vw,35px);line-height:1.13}
+ .home-index-head .smallcaps,.home-overview-head .smallcaps{font-size:8px;letter-spacing:.06em}
+ .home-index .category,.home-index .category.album{height:138px;min-height:138px;padding:17px 21px}
+ .home-index .cat-title{margin:9px 0 8px}
+ .home-overview-head{margin:25px 0 11px}
+ .home-recent-head{margin:29px 0 14px}
+ .home-overview-head h2,.home-recent-head h2{font-size:17px}
+}
+@media(max-width:355px){
+ .home-index .category,.home-index .category.album{height:136px;min-height:136px;padding:16px 17px}
+}
 </style>
 </head>
 <body>
@@ -747,7 +772,8 @@ function beginNew(type){if(!state.isAdmin)return goLogin();state.category=type;s
 function beginEdit(id){if(!state.isAdmin)return goLogin();const old=state.all.find(r=>r.id===id);if(!old)return toast('자료를 찾지 못했습니다.');state.category=old.type;state.view='form';state.recordId=id;state.draft={...old,officialX:old.officialX||'',melonHot100:old.melonHot100||'',melonTop100:old.melonTop100||'',firstWeekSales:old.firstWeekSales||'',mvViews:old.mvViews||'',mvVideoId:old.mvVideoId||'',mvCheckedAt:old.mvCheckedAt||'',issueNotes:old.issueNotes||'',personalNotes:old.personalNotes||'',members:(old.members||[]).map(m=>({...m})),tracks:(old.tracks||[]).map(t=>({...t}))};if(!state.draft.tracks.length)state.draft.tracks=[defaultTrack(0)];if(old.type!=='album')syncMembers(state.draft.memberCount||2);show();}
 function showDetail(id){const rec=state.all.find(r=>r.id===id);if(!rec)return;state.category=rec.type;state.view='detail';state.recordId=id;show();}
 function categoryTile(type,num){const m=meta[type];return `<button class="category ${type}" data-action="category" data-type="${type}"><span class="cat-kicker">COLLECTION / 0${num}</span><span class="cat-title">${m.title.replace('NEW ','NEW<br>')}</span><span class="cat-meta"><span class="cat-arrow">↗</span>${count(type)}개의 기록</span><span class="graphic" aria-hidden="true"></span></button>`;}
-function renderHome(){app.innerHTML=`<section class="home-hero"><div class="eyebrow">YOUR PERSONAL K-POP DATABASE / VOL. 001</div><h1 class="main-title">Archive the<br><em>Next Era.</em></h1><p class="intro">새롭게 데뷔하는 아이돌 그룹부터 발매 앨범까지.<br>필요한 정보를 차곡차곡 기록하고, 언제든 다시 꺼내 보는 나만의 K-POP 아카이브.</p></section><div class="section-head"><div><h2>Explore Collections</h2><p>카테고리를 선택해 새로운 기록을 추가하세요.</p></div><span class="smallcaps">SELECT A CATEGORY ↘</span></div><div class="category-grid">${categoryTile('girl',1)}${categoryTile('boy',2)}${categoryTile('album',3)}</div><div class="stats-bar"><div class="stat"><span>GIRL GROUP</span><strong>${count('girl')}</strong></div><div class="stat"><span>BOY GROUP</span><strong>${count('boy')}</strong></div><div class="stat"><span>ALBUM</span><strong>${count('album')}</strong></div></div><div class="section-head"><div><h2>Recently Archived</h2><p>가장 최근에 추가하거나 수정한 자료</p></div></div><div class="list-grid">${state.all.length?state.all.slice(0,6).map(recordCard).join(''):`<div class="empty"><strong>아직 보관된 자료가 없습니다.</strong><span>위의 카테고리를 눌러 첫 번째 기록을 만들어 보세요.</span></div>`}</div><p class="notice">* 클라우드 동기화 아카이브입니다. 자료는 모든 기기에서 동일하게 보이며, 등록·수정·삭제는 관리자 로그인 후 가능합니다.</p>`;}
+function renderHome(){app.innerHTML=`<section class="home-index" aria-labelledby="browse-archive-title"><div class="home-index-head"><h1 id="browse-archive-title" class="home-index-title">Browse Archive</h1><span class="smallcaps">COLLECTIONS</span></div><div class="category-grid">${categoryTile('girl',1)}${categoryTile('boy',2)}${categoryTile('album',3)}</div></section><section class="home-overview" aria-labelledby="overview-title"><div class="section-head home-overview-head"><div><h2 id="overview-title">Archive Overview</h2></div><span class="smallcaps">TOTAL RECORDS</span></div><div class="stats-bar"><div class="stat"><span>GIRL GROUP</span><strong>${count('girl')}</strong></div><div class="stat"><span>BOY GROUP</span><strong>${count('boy')}</strong></div><div class="stat"><span>ALBUM</span><strong>${count('album')}</strong></div></div></section><section class="home-recent" aria-labelledby="recent-title"><div class="section-head home-recent-head"><div><h2 id="recent-title">Recently Archived</h2><p>가장 최근에 추가하거나 수정한 자료</p></div></div><div class="list-grid">${state.all.length?state.all.slice(0,6).map(recordCard).join(''):`<div class="empty"><strong>아직 보관된 자료가 없습니다.</strong><span>위의 카테고리를 눌러 첫 번째 기록을 만들어 보세요.</span></div>`}</div></section><p class="notice">* 클라우드 동기화 아카이브입니다. 자료는 모든 기기에서 동일하게 보이며, 등록·수정·삭제는 관리자 로그인 후 가능합니다.</p>`;}
+
 function cardTitle(r){return r.type==='album'?r.albumName:r.groupName;}
 function recordCard(r){const photo=r.type==='album'?r.albumCover:(r.groupPhoto||r.albumCover);const secondary=r.type==='album'?r.groupName:(r.company||r.debutAlbumName);return `<article class="record-card"><button class="record-open" data-action="detail" data-id="${esc(r.id)}"><div class="record-cover">${iconCover(photo,'IDOL',false)}<span class="record-tag ${r.type}">${meta[r.type].tag}</span></div><div class="record-info"><h3>${esc(cardTitle(r)||'이름 없는 기록')}</h3><p>${esc(secondary||'추가 정보 없음')} · ${esc(r.albumType||'앨범 미선택')}</p></div></button><div class="record-bottom"><span class="record-date">${prettyDate(r.debutDate||r.releaseDate||r.createdAt)}</span>${state.isAdmin?`<div><button class="text-button" data-action="edit" data-id="${esc(r.id)}">수정</button><button class="text-button danger" data-action="delete" data-id="${esc(r.id)}">삭제</button></div>`:""}</div></article>`;}
 function filteredRecords(){const q=state.search.trim().toLocaleLowerCase();return state.all.filter(r=>r.type===state.category).filter(r=>!q||[r.groupName,r.company,r.albumName,r.debutAlbumName,r.officialX,r.melonHot100,r.melonTop100,r.firstWeekSales,r.mvViews,r.issueNotes,r.personalNotes,(r.tracks||[]).map(t=>t.name).join(' ')].some(x=>String(x||'').toLocaleLowerCase().includes(q)));}
