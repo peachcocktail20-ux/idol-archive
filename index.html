@@ -614,6 +614,15 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,.m
 @media(max-width:355px){
  .home-index .category,.home-index .category.album{height:136px;min-height:136px;padding:16px 17px}
 }
+/* YouTube 1M-view milestone: visually consistent with the album statistics. */
+.mv-million{margin-top:15px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:#F8F9FC;color:var(--brand-main);font-family:var(--font-ui)}
+.mv-million-label{font-size:11px;font-weight:800;letter-spacing:.015em}
+.mv-million.reached{background:#EFF3FB;border-color:#DCE4F5}
+.mv-million.reached .mv-million-label{color:#526EA6}
+.mv-million strong{display:block;font-size:15px;line-height:1.5;font-weight:850;letter-spacing:-.01em;margin-top:4px}
+.mv-million strong small{font-size:10px;font-weight:700;color:#75809D}
+.mv-million p{color:#777F92;font-size:11px;line-height:1.65;margin:5px 0 0}
+@media(max-width:650px){.mv-million{padding:12px 13px}.mv-million strong{font-size:14px}}
 </style>
 </head>
 <body>
@@ -660,7 +669,7 @@ function imgURL(data){
 }
 function iconCover(blob,text='IMG',focusable=true){const src=imgURL(blob);return src?`<img class="${focusable?'zoomable-image':'catalog-image'}" src="${esc(src)}" alt="앨범/그룹 이미지" ${focusable?'role="button" tabindex="0" aria-label="사진 크게 보기" title="클릭하여 원본 이미지 보기"':'title="상세 페이지 보기"'}>`:`<div class="record-fallback">${esc(text)}</div>`;}
 function defaultTrack(i){return {name:'',genre:'',youtube:'',title:i===0};}
-function newDraft(type){return {id:newId(),type,groupName:'',company:'',debutDate:'',memberCount:2,members:[blankMember(),blankMember()],debutAlbumName:'',albumName:'',releaseDate:'',albumType:'미니',tracks:[defaultTrack(0)],groupPhoto:null,albumCover:null,officialX:'',melonHot100:'',melonTop100:'',firstWeekSales:'',mvViews:'',mvVideoId:'',mvCheckedAt:'',issueNotes:'',personalNotes:'',createdAt:new Date().toISOString(),updatedAt:''};}
+function newDraft(type){return {id:newId(),type,groupName:'',company:'',debutDate:'',memberCount:2,members:[blankMember(),blankMember()],debutAlbumName:'',albumName:'',releaseDate:'',albumType:'미니',tracks:[defaultTrack(0)],groupPhoto:null,albumCover:null,officialX:'',melonHot100:'',melonTop100:'',firstWeekSales:'',mvViews:'',mvVideoId:'',mvCheckedAt:'',mvMillionMilestone:null,issueNotes:'',personalNotes:'',createdAt:new Date().toISOString(),updatedAt:''};}
 function blankMember(){return {name:'',birthYear:'',nationality:'',position:'',photo:null,photoPath:null};}
 async function getAll(){
  let records=[];
@@ -706,6 +715,16 @@ async function put(record){
     member.photoPath=uploaded.path;
    }
   }
+  // Keep server-recorded milestones when an older edit form is saved later.
+  // A replacement YouTube link starts a separate, fresh tracking history.
+  const videoForMilestone=titleVideoId(r);
+  if(videoForMilestone){
+    const {data:current,error:currentError}=await client.from(TABLE).select('payload').eq('id',r.id).maybeSingle();
+    if(currentError)throw currentError;
+    const latest=current?.payload?.mvMillionMilestone;
+    if(latest?.videoId===videoForMilestone)r.mvMillionMilestone=latest;
+    else if(r.mvMillionMilestone?.videoId!==videoForMilestone)delete r.mvMillionMilestone;
+  }else delete r.mvMillionMilestone;
   const payload=JSON.parse(JSON.stringify(r));
   const {error}=await client.from(TABLE).upsert({id:r.id,type:r.type,payload,updated_at:r.updatedAt||new Date().toISOString()},{onConflict:'id'});
   if(error)throw error;
@@ -767,7 +786,7 @@ function show(){cleanURLs();updateHeader();nav(state.view==='home'?'home':state.
 function goHome(){state.view='home';state.search='';show();}
 function goCategory(type){if(!meta[type])return;state.category=type;state.view='category';state.search='';show();}
 function beginNew(type){if(!state.isAdmin)return goLogin();state.category=type;state.view='form';state.recordId=null;state.draft=newDraft(type);show();}
-function beginEdit(id){if(!state.isAdmin)return goLogin();const old=state.all.find(r=>r.id===id);if(!old)return toast('자료를 찾지 못했습니다.');state.category=old.type;state.view='form';state.recordId=id;state.draft={...old,officialX:old.officialX||'',melonHot100:old.melonHot100||'',melonTop100:old.melonTop100||'',firstWeekSales:old.firstWeekSales||'',mvViews:old.mvViews||'',mvVideoId:old.mvVideoId||'',mvCheckedAt:old.mvCheckedAt||'',issueNotes:old.issueNotes||'',personalNotes:old.personalNotes||'',members:(old.members||[]).map(m=>({...m})),tracks:(old.tracks||[]).map(t=>({...t}))};if(!state.draft.tracks.length)state.draft.tracks=[defaultTrack(0)];if(old.type!=='album')syncMembers(state.draft.memberCount||2);show();}
+function beginEdit(id){if(!state.isAdmin)return goLogin();const old=state.all.find(r=>r.id===id);if(!old)return toast('자료를 찾지 못했습니다.');state.category=old.type;state.view='form';state.recordId=id;state.draft={...old,officialX:old.officialX||'',melonHot100:old.melonHot100||'',melonTop100:old.melonTop100||'',firstWeekSales:old.firstWeekSales||'',mvViews:old.mvViews||'',mvVideoId:old.mvVideoId||'',mvCheckedAt:old.mvCheckedAt||'',mvMillionMilestone:old.mvMillionMilestone||null,issueNotes:old.issueNotes||'',personalNotes:old.personalNotes||'',members:(old.members||[]).map(m=>({...m})),tracks:(old.tracks||[]).map(t=>({...t}))};if(!state.draft.tracks.length)state.draft.tracks=[defaultTrack(0)];if(old.type!=='album')syncMembers(state.draft.memberCount||2);show();}
 function showDetail(id){const rec=state.all.find(r=>r.id===id);if(!rec)return;state.category=rec.type;state.view='detail';state.recordId=id;show();}
 function categoryTile(type,num){const m=meta[type];return `<button class="category ${type}" data-action="category" data-type="${type}"><span class="cat-kicker">COLLECTION / 0${num}</span><span class="cat-title">${m.title.replace('NEW ','NEW<br>')}</span><span class="cat-meta"><span class="cat-arrow">↗</span>${count(type)}개의 기록</span><span class="graphic" aria-hidden="true"></span></button>`;}
 function renderHome(){app.innerHTML=`<section class="home-index" aria-label="아카이브 카테고리"><div class="category-grid">${categoryTile('girl',1)}${categoryTile('boy',2)}${categoryTile('album',3)}</div></section><section class="home-overview" aria-labelledby="overview-title"><div class="section-head home-overview-head"><div><h2 id="overview-title">Archive Overview</h2></div><span class="smallcaps">TOTAL RECORDS</span></div><div class="stats-bar"><div class="stat"><span>GIRL GROUP</span><strong>${count('girl')}</strong></div><div class="stat"><span>BOY GROUP</span><strong>${count('boy')}</strong></div><div class="stat"><span>ALBUM</span><strong>${count('album')}</strong></div></div></section><section class="home-recent" aria-labelledby="recent-title"><div class="section-head home-recent-head"><div><h2 id="recent-title">Recently Archived</h2><p>가장 최근에 추가하거나 수정한 자료</p></div></div><div class="list-grid">${state.all.length?state.all.slice(0,6).map(recordCard).join(''):`<div class="empty"><strong>아직 보관된 자료가 없습니다.</strong><span>위의 카테고리를 눌러 첫 번째 기록을 만들어 보세요.</span></div>`}</div></section><p class="notice">* 클라우드 동기화 아카이브입니다. 자료는 모든 기기에서 동일하게 보이며, 등록·수정·삭제는 관리자 로그인 후 가능합니다.</p>`;}
@@ -868,9 +887,30 @@ function formatMetric(n,suffix=''){
  if(!/^\d+$/.test(str))return '';
  return Number(str).toLocaleString('ko-KR')+suffix;
 }
+function mvMillionTime(raw){
+ if(!raw)return '';
+ const d=new Date(raw);
+ if(Number.isNaN(d.getTime()))return '';
+ return d.toLocaleString('ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
+}
+function mvMillionDisplay(r){
+ const m=r.mvMillionMilestone;
+ if(!m||m.videoId!==titleVideoId(r))return '';
+ if(m.status==='reached'&&mvMillionTime(m.firstAboveAt)){
+  const before=mvMillionTime(m.lastBelowAt);
+  return `<div class="mv-million reached"><div class="mv-million-label">100만 회 돌파 · 최초 확인</div><strong>${esc(mvMillionTime(m.firstAboveAt))} <small>KST</small></strong><p>${before?`직전 100만 회 미만 확인: ${esc(before)} · `:''}정확한 돌파 시각은 확인 시각 사이이며, 위 시간은 최초 감지 시각입니다.</p></div>`;
+ }
+ if(m.status==='already_above'){
+  return '<div class="mv-million previously-reached"><div class="mv-million-label">100만 회 이상</div><p>추적 시작 전에 이미 돌파한 영상으로, 정확한 달성일은 확인할 수 없습니다.</p></div>';
+ }
+ if(m.status==='tracking'){
+  return '<div class="mv-million tracking"><div class="mv-million-label">100만 회 달성 추적 중</div><p>현재 100만 회 미만 · 6시간마다 자동 확인</p></div>';
+ }
+ return '';
+}
 function metricDisplay(r){
  const values=[['멜론 HOT100',r.melonHot100,'위'],['멜론 TOP100',r.melonTop100,'위'],['초동 판매량',r.firstWeekSales,'장'],['MV 조회수',r.mvViews,'회']];
- return `<section class="data-card album-metrics"><h3>ALBUM PERFORMANCE</h3><div class="album-metric-grid">${values.map(([label,val,suffix])=>`<div class="album-metric"><span>${label}</span><strong>${esc(formatMetric(val,suffix)||'미입력')}</strong></div>`).join('')}</div>${r.mvCheckedAt&&r.mvVideoId===titleVideoId(r)?`<p class="metric-date">MV 조회수 마지막 확인: ${esc(new Date(r.mvCheckedAt).toLocaleString("ko-KR",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}))} · 약 6시간마다 자동 갱신</p>`:''}</section>`;
+ return `<section class="data-card album-metrics"><h3>ALBUM PERFORMANCE</h3><div class="album-metric-grid">${values.map(([label,val,suffix])=>`<div class="album-metric"><span>${label}</span><strong>${esc(formatMetric(val,suffix)||'미입력')}</strong></div>`).join('')}</div>${mvMillionDisplay(r)}${r.mvCheckedAt&&r.mvVideoId===titleVideoId(r)?`<p class="metric-date">MV 조회수 마지막 확인: ${esc(mvMillionTime(r.mvCheckedAt))} (KST) · 약 6시간마다 자동 갱신</p>`:''}</section>`;
 }
 async function refreshMVViews(){
  if(!state.isAdmin||!state.draft)return;
@@ -924,6 +964,7 @@ if(d.type!=='album'&&String(d.officialX||'').trim()&&!officialXUrl(d.officialX))
 for(const key of ['melonHot100','melonTop100']){const value=String(d[key]||'').replace(/,/g,'').trim();if(value&&(!/^\d+$/.test(value)||Number(value)<1||Number(value)>100)){toast('멜론 순위는 1~100 사이 숫자로 입력해 주세요.');document.getElementById('field-'+key)?.focus();return;}d[key]=value;}
 for(const key of ['firstWeekSales','mvViews']){const value=String(d[key]||'').replace(/,/g,'').trim();if(value&&!/^\d+$/.test(value)){toast('판매량과 조회수는 0 이상의 숫자로 입력해 주세요.');document.getElementById('field-'+key)?.focus();return;}d[key]=value;}
 if(d.mvVideoId&&d.mvVideoId!==titleVideoId(d)){d.mvCheckedAt='';d.mvVideoId='';}
+if(d.mvMillionMilestone?.videoId!==titleVideoId(d))delete d.mvMillionMilestone;
 const bad=(d.tracks||[]).findIndex(t=>!validVideoLink(t.youtube||''));if(bad>=0){toast(`TRACK ${bad+1}의 유튜브 주소를 확인하세요.`);return;}
 state.saving=true;const btn=document.getElementById('save-button');if(btn){btn.disabled=true;btn.textContent='클라우드에 저장하는 중…';}
 try{d.updatedAt=new Date().toISOString();if(d.type!=='album')syncMembers(d.memberCount);if(!d.tracks.some(x=>x.title)&&d.tracks.length)d.tracks[0].title=true;await put(d);await reload();toast('클라우드에 저장했습니다.');showDetail(d.id);}catch(err){console.error(err);toast('저장 실패: '+(err.message||'권한과 연결을 확인하세요.'));}finally{state.saving=false;if(document.getElementById('save-button'))document.getElementById('save-button').disabled=false;}}
